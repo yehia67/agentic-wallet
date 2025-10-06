@@ -8,16 +8,16 @@ const mockCreate = jest.fn();
 const mockOpenAI = {
   chat: {
     completions: {
-      create: mockCreate
-    }
-  }
+      create: mockCreate,
+    },
+  },
 };
 
 // Mock the OpenAI constructor
 jest.mock('openai', () => {
   return {
     __esModule: true,
-    default: jest.fn(() => mockOpenAI)
+    default: jest.fn(() => mockOpenAI),
   };
 });
 
@@ -28,14 +28,16 @@ describe('OpenAISingleton', () => {
   beforeEach(async () => {
     // Reset all mocks before each test
     jest.clearAllMocks();
-    
+
     // Default mock implementation for successful responses
     mockCreate.mockResolvedValue({
-      choices: [{
-        message: {
-          content: 'Mock OpenAI response'
-        }
-      }]
+      choices: [
+        {
+          message: {
+            content: 'Mock OpenAI response',
+          },
+        },
+      ],
     });
 
     const module: TestingModule = await Test.createTestingModule({
@@ -81,7 +83,7 @@ describe('OpenAISingleton', () => {
   describe('think', () => {
     it('should call OpenAI with correct parameters', async () => {
       const prompt = 'Test prompt';
-      
+
       await service.think(prompt);
 
       expect(configService.get).toHaveBeenCalledWith(

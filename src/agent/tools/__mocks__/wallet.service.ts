@@ -14,15 +14,17 @@ export class WalletService {
     return 'https://sepolia.basescan.org/address/0x1234567890123456789012345678901234567890';
   }
 
-  async sendTransaction(to: string, data: string = '0x'): Promise<string> {
+  async sendTransaction(to: string, data = '0x'): Promise<string> {
     return '0xmocktransactionhash';
   }
 
-  async approveToken(spender: string, amount: bigint = BigInt(0)): Promise<string> {
+  async approveToken(spender: string, amount = BigInt(0)): Promise<string> {
     return '0xmockapprovaltrxhash';
   }
 
-  async batchTransactions(transactions: Array<{ to: string; value?: bigint; data?: string }>): Promise<string> {
+  async batchTransactions(
+    transactions: Array<{ to: string; value?: bigint; data?: string }>,
+  ): Promise<string> {
     return '0xmockbatchtrxhash';
   }
 

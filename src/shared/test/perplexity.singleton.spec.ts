@@ -8,16 +8,16 @@ const mockCreate = jest.fn();
 const mockOpenAI = {
   chat: {
     completions: {
-      create: mockCreate
-    }
-  }
+      create: mockCreate,
+    },
+  },
 };
 
 // Mock the OpenAI constructor
 jest.mock('openai', () => {
   return {
     __esModule: true,
-    default: jest.fn(() => mockOpenAI)
+    default: jest.fn(() => mockOpenAI),
   };
 });
 
@@ -28,14 +28,16 @@ describe('PerplexitySingleton', () => {
   beforeEach(async () => {
     // Reset all mocks before each test
     jest.clearAllMocks();
-    
+
     // Default mock implementation for successful responses
     mockCreate.mockResolvedValue({
-      choices: [{
-        message: {
-          content: 'Mock Perplexity response'
-        }
-      }]
+      choices: [
+        {
+          message: {
+            content: 'Mock Perplexity response',
+          },
+        },
+      ],
     });
 
     const module: TestingModule = await Test.createTestingModule({
@@ -81,7 +83,7 @@ describe('PerplexitySingleton', () => {
   describe('research', () => {
     it('should call OpenAI with correct parameters', async () => {
       const prompt = 'Test research prompt';
-      
+
       await service.research(prompt);
 
       expect(configService.get).toHaveBeenCalledWith(
@@ -116,7 +118,7 @@ describe('PerplexitySingleton', () => {
       mockCreate.mockRejectedValueOnce(new Error('API error'));
 
       await expect(service.research('Test research prompt')).rejects.toThrow(
-        'API error'
+        'API error',
       );
     });
   });

@@ -78,7 +78,9 @@ describe('WalletService', () => {
   describe('getWalletUrl', () => {
     it('should return the wallet URL', () => {
       const url = walletService.getWalletUrl();
-      expect(url).toBe('https://sepolia.basescan.org/address/0x1234567890123456789012345678901234567890');
+      expect(url).toBe(
+        'https://sepolia.basescan.org/address/0x1234567890123456789012345678901234567890',
+      );
     });
   });
 });

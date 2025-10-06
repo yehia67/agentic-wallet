@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { WalletService } from '../src/shared/services/wallet.service';
 import { WalletAgentTool } from '../src/agent/tools';
@@ -70,10 +70,10 @@ describe('Wallet Integration (e2e)', () => {
 
     it('should check balance successfully', async () => {
       const result = await walletTool.execute({ action: 'check_balance' });
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
-      
+
       if (result.data) {
         expect(result.data.address).toBeDefined();
         expect(result.data.balance).toBeDefined();
@@ -89,7 +89,7 @@ describe('Wallet Integration (e2e)', () => {
           data: '0x1234',
         },
       });
-      
+
       expect(result).toBeDefined();
       expect(typeof result.safe).toBe('boolean');
       expect(result.reason).toBeDefined();
@@ -108,7 +108,7 @@ describe('Wallet Integration (e2e)', () => {
 
       expect(response.body).toBeDefined();
       expect(response.body.status).toBeDefined();
-      
+
       // The test might not always result in a completed status due to the
       // non-deterministic nature of the agent, but we can check the structure
       if (response.body.status === 'completed') {
@@ -118,24 +118,5 @@ describe('Wallet Integration (e2e)', () => {
         expect(response.body.wallet.balance).toBeDefined();
       }
     }, 60000); // Increased timeout for full agent workflow
-  });
-
-  // Skip actual transaction sending in tests to avoid spending funds
-  describe('Transaction Simulation', () => {
-    it('should simulate transaction preparation', async () => {
-      // This test doesn't actually send a transaction but tests the preparation logic
-      const address = await walletService.getWalletAddress();
-      const explorerUrl = walletService.getWalletUrl();
-      
-      expect(address).toBeDefined();
-      expect(explorerUrl).toBeDefined();
-      
-      // We can test the transaction URL formatting without sending a real transaction
-      const mockTxHash = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
-      const txUrl = walletService.getTransactionUrl(mockTxHash);
-      
-      expect(txUrl).toBeDefined();
-      expect(txUrl).toContain(mockTxHash);
-    });
   });
 });

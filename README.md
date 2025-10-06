@@ -190,7 +190,7 @@ The Agentic RAG system exposes an endpoint at `/agent/message` that accepts POST
 curl -X POST http://localhost:3000/agent/message \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "I want to participate in the latest Arbitrum airdrop. What steps should I take?",
+    "message": "collect ETH and earn some passive income I have 10 K USD",
     "preferences": {
       "risk_tolerance": "medium",
       "investment_amount": "$500",

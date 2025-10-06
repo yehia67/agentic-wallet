@@ -6,7 +6,10 @@ import {
   PlanningResponse,
   ResearchResponse,
   JudgeResponse,
+  WalletAction,
+  WalletResult,
 } from './types/agent.types';
+import { WalletAgentTool, PlanGeneratorTool } from './tools';
 import {
   PLANNING_AGENT_PROMPT,
   RESEARCH_AGENT_PROMPT,
@@ -20,6 +23,8 @@ export class AgentService {
   constructor(
     private readonly openAI: OpenAISingleton,
     private readonly perplexity: PerplexitySingleton,
+    private readonly walletTool: WalletAgentTool,
+    private readonly planGenerator: PlanGeneratorTool,
   ) {}
 
   async processMessage(dto: AgentMessageDto): Promise<AgentResponseDto> {
@@ -77,6 +82,32 @@ export class AgentService {
 
       // Check if the plan is approved
       if (judgeResponse.decision === 'approved') {
+        // Step 4: Extract wallet actions from the plan if any
+        if (!context.walletAction && context.planningResult) {
+          context.walletAction = await this.extractWalletActionsFromPlan(
+            context.planningResult,
+          );
+        }
+
+        // Step 5: Execute wallet operations if needed
+        if (context.walletAction) {
+          this.logger.log('Plan approved, executing wallet operations');
+          const walletResult = await this.executeWalletOperation(context);
+          context.walletResult = walletResult;
+
+          // If wallet operation failed, update the status
+          if (!walletResult.success) {
+            return {
+              message: `Wallet operation failed: ${walletResult.error}`,
+              plan: context.planningResult,
+              research: context.researchResult,
+              decision: context.judgeResult,
+              wallet: walletResult,
+              status: 'failed',
+            };
+          }
+        }
+
         return this.buildFinalResponse(context);
       }
 
@@ -87,6 +118,7 @@ export class AgentService {
           plan: context.planningResult,
           research: context.researchResult,
           decision: context.judgeResult,
+          wallet: context.walletResult,
           status: 'failed',
         };
       }
@@ -178,8 +210,28 @@ export class AgentService {
 
   private async callPlanningAgent(prompt: string): Promise<PlanningResponse> {
     try {
-      const response = await this.openAI.think(prompt);
-      return this.parseJsonResponse<PlanningResponse>(response);
+      this.logger.log('Calling planning agent');
+
+      // Extract context from the prompt
+      const userIntent = this.extractUserIntentFromPrompt(prompt);
+      const userPreferences = this.extractUserPreferencesFromPrompt(prompt);
+      const previousFeedback = this.extractPreviousFeedbackFromPrompt(prompt);
+      const improvementSuggestions =
+        this.extractImprovementSuggestionsFromPrompt(prompt);
+
+      // Use the plan generator tool
+      const result = await this.planGenerator.generatePlan({
+        userIntent,
+        userPreferences,
+        previousFeedback,
+        improvementSuggestions,
+      });
+
+      if (!result.success || !result.plan) {
+        throw new Error(result.error || 'Failed to generate plan');
+      }
+
+      return result.plan;
     } catch (error) {
       this.logger.error(
         `Error calling planning agent: ${error.message}`,
@@ -189,8 +241,67 @@ export class AgentService {
     }
   }
 
+  /**
+   * Extract user intent from the planning prompt
+   */
+  private extractUserIntentFromPrompt(prompt: string): string {
+    const intentMatch = prompt.match(/User Intent: (.+?)(?:\n|$)/i);
+    return intentMatch ? intentMatch[1].trim() : '';
+  }
+
+  /**
+   * Extract user preferences from the planning prompt
+   */
+  private extractUserPreferencesFromPrompt(
+    prompt: string,
+  ): Record<string, any> {
+    try {
+      const preferencesMatch = prompt.match(
+        /User Preferences: (\{[\s\S]*?\})(?:\n|$)/i,
+      );
+      if (preferencesMatch && preferencesMatch[1]) {
+        return JSON.parse(preferencesMatch[1]);
+      }
+    } catch (error) {
+      this.logger.error(`Error parsing user preferences: ${error.message}`);
+    }
+    return {};
+  }
+
+  /**
+   * Extract previous feedback from the planning prompt
+   */
+  private extractPreviousFeedbackFromPrompt(
+    prompt: string,
+  ): string | undefined {
+    const feedbackMatch = prompt.match(
+      /Previous Plan Feedback: (.+?)(?:\n|$)/i,
+    );
+    return feedbackMatch ? feedbackMatch[1].trim() : undefined;
+  }
+
+  /**
+   * Extract improvement suggestions from the planning prompt
+   */
+  private extractImprovementSuggestionsFromPrompt(prompt: string): string[] {
+    const suggestionsMatch = prompt.match(
+      /Improvement Suggestions: (\[[\s\S]*?\])(?:\n|$)/i,
+    );
+    if (suggestionsMatch && suggestionsMatch[1]) {
+      try {
+        return JSON.parse(suggestionsMatch[1]);
+      } catch (error) {
+        this.logger.error(
+          `Error parsing improvement suggestions: ${error.message}`,
+        );
+      }
+    }
+    return [];
+  }
+
   private async callResearchAgent(prompt: string): Promise<ResearchResponse> {
     try {
+      this.logger.log('Calling research agent');
       const response = await this.perplexity.research(prompt);
       return this.parseJsonResponse<ResearchResponse>(response);
     } catch (error) {
@@ -240,7 +351,90 @@ export class AgentService {
       plan: context.planningResult,
       research: context.researchResult,
       decision: context.judgeResult,
+      wallet: context.walletResult,
       status: 'completed',
     };
+  }
+
+  /**
+   * Extract wallet actions from the approved plan
+   */
+  private async extractWalletActionsFromPlan(
+    plan: PlanningResponse,
+  ): Promise<WalletAction | undefined> {
+    try {
+      // Use the plan generator tool to extract wallet operations
+      const walletOperation = await this.planGenerator.extractWalletOperations(
+        plan,
+      );
+      return walletOperation as WalletAction | undefined;
+    } catch (error) {
+      this.logger.error(
+        `Error extracting wallet actions: ${error.message}`,
+        error.stack,
+      );
+      return undefined;
+    }
+  }
+
+  /**
+   * Execute wallet operations based on the agent context
+   */
+  private async executeWalletOperation(
+    context: AgentContext,
+  ): Promise<WalletResult> {
+    if (!context.walletAction) {
+      return {
+        success: false,
+        message: 'No wallet action specified',
+        error: 'Missing wallet action in context',
+      };
+    }
+
+    try {
+      this.logger.log(
+        `Executing wallet operation: ${context.walletAction.type}`,
+      );
+
+      // Analyze transaction safety first
+      const safetyAnalysis = await this.walletTool.analyzeTransactionSafety({
+        action: context.walletAction.type,
+        parameters: context.walletAction.parameters,
+      });
+
+      if (!safetyAnalysis.safe) {
+        return {
+          success: false,
+          message: `Wallet operation rejected: ${safetyAnalysis.reason}`,
+          error: safetyAnalysis.reason,
+        };
+      }
+
+      // Execute the wallet operation
+      const result = await this.walletTool.execute({
+        action: context.walletAction.type,
+        parameters: context.walletAction.parameters,
+      });
+
+      return {
+        success: result.success,
+        message: result.message,
+        address: result.data?.address,
+        balance: result.data?.balance,
+        transactionHash: result.data?.transactionHash,
+        explorerUrl: result.data?.explorerUrl,
+        error: result.error,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error executing wallet operation: ${error.message}`,
+        error.stack,
+      );
+      return {
+        success: false,
+        message: 'Wallet operation failed',
+        error: error.message,
+      };
+    }
   }
 }

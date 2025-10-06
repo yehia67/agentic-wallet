@@ -1,5 +1,5 @@
 // Agent types
-export type AgentType = 'planning' | 'research' | 'judge';
+export type AgentType = 'planning' | 'research' | 'judge' | 'wallet';
 
 // Research Agent types
 export interface ResearchFinding {
@@ -45,6 +45,37 @@ export interface JudgeResponse {
   improvement_suggestions: string[];
 }
 
+// Wallet Agent types
+export interface WalletTransaction {
+  to: string;
+  value?: string;
+  data?: string;
+}
+
+export interface WalletAction {
+  type:
+    | 'check_balance'
+    | 'send_transaction'
+    | 'approve_token'
+    | 'batch_transactions';
+  parameters?: {
+    to?: string;
+    data?: string;
+    spender?: string;
+    transactions?: WalletTransaction[];
+  };
+}
+
+export interface WalletResult {
+  success: boolean;
+  message: string;
+  address?: string;
+  balance?: number;
+  transactionHash?: string;
+  explorerUrl?: string;
+  error?: string;
+}
+
 // Coordinator types
 export interface AgentContext {
   userIntent: string;
@@ -52,5 +83,7 @@ export interface AgentContext {
   planningResult?: PlanningResponse;
   researchResult?: ResearchResponse;
   judgeResult?: JudgeResponse;
+  walletAction?: WalletAction;
+  walletResult?: WalletResult;
   cycleCount: number;
 }

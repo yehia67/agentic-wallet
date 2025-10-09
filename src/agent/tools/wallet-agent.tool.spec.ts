@@ -11,19 +11,15 @@ describe('WalletAgentTool', () => {
   beforeEach(async () => {
     // Create mock services
     const walletServiceMock = {
-      getWalletAddress: jest.fn().mockResolvedValue('0x123456789abcdef'),
-      getUsdcBalance: jest.fn().mockResolvedValue(100.5),
-      getWalletUrl: jest
-        .fn()
-        .mockReturnValue(
-          'https://explorer.example.com/address/0x123456789abcdef',
-        ),
+      getAddress: jest.fn().mockResolvedValue('0x123456789abcdef'),
+      getUsdcBalance: jest.fn().mockResolvedValue(BigInt(100500000)), // 100.5 USDC with 6 decimals
+      getExplorerUrl: jest.fn().mockImplementation((hash) => {
+        if (!hash) return 'https://explorer.example.com/';
+        return `https://explorer.example.com/tx/${hash}`;
+      }),
       sendTransaction: jest.fn().mockResolvedValue('0xabcdef1234567890'),
-      getTransactionUrl: jest
-        .fn()
-        .mockReturnValue('https://explorer.example.com/tx/0xabcdef1234567890'),
-      approveToken: jest.fn().mockResolvedValue('0xabcdef1234567890'),
-      batchTransactions: jest.fn().mockResolvedValue('0xabcdef1234567890'),
+      sendBatchTransaction: jest.fn().mockResolvedValue('0xabcdef1234567890'),
+      usdcAddress: '0xUSDCAddressMock',
     };
 
     const openAIMock = {
@@ -62,9 +58,9 @@ describe('WalletAgentTool', () => {
       expect(result.data?.explorerUrl).toBe(
         'https://explorer.example.com/address/0x123456789abcdef',
       );
-      expect(walletService.getWalletAddress).toHaveBeenCalled();
+      expect(walletService.getAddress).toHaveBeenCalled();
       expect(walletService.getUsdcBalance).toHaveBeenCalled();
-      expect(walletService.getWalletUrl).toHaveBeenCalled();
+      expect(walletService.getExplorerUrl).toHaveBeenCalled();
     });
 
     it('should send transaction successfully', async () => {
@@ -81,11 +77,11 @@ describe('WalletAgentTool', () => {
       expect(result.data?.explorerUrl).toBe(
         'https://explorer.example.com/tx/0xabcdef1234567890',
       );
-      expect(walletService.sendTransaction).toHaveBeenCalledWith(
-        '0xdef9876543210abc',
-        '0x1234',
-      );
-      expect(walletService.getTransactionUrl).toHaveBeenCalledWith(
+      expect(walletService.sendTransaction).toHaveBeenCalledWith({
+        to: '0xdef9876543210abc',
+        data: '0x1234',
+      });
+      expect(walletService.getExplorerUrl).toHaveBeenCalledWith(
         '0xabcdef1234567890',
       );
     });
@@ -103,10 +99,9 @@ describe('WalletAgentTool', () => {
       expect(result.data?.explorerUrl).toBe(
         'https://explorer.example.com/tx/0xabcdef1234567890',
       );
-      expect(walletService.approveToken).toHaveBeenCalledWith(
-        '0xabc1234567890def',
-      );
-      expect(walletService.getTransactionUrl).toHaveBeenCalledWith(
+      // We now use sendTransaction with encoded data instead of approveToken
+      expect(walletService.sendTransaction).toHaveBeenCalled();
+      expect(walletService.getExplorerUrl).toHaveBeenCalledWith(
         '0xabcdef1234567890',
       );
     });
@@ -127,8 +122,8 @@ describe('WalletAgentTool', () => {
       expect(result.data?.explorerUrl).toBe(
         'https://explorer.example.com/tx/0xabcdef1234567890',
       );
-      expect(walletService.batchTransactions).toHaveBeenCalled();
-      expect(walletService.getTransactionUrl).toHaveBeenCalledWith(
+      expect(walletService.sendBatchTransaction).toHaveBeenCalled();
+      expect(walletService.getExplorerUrl).toHaveBeenCalledWith(
         '0xabcdef1234567890',
       );
     });

@@ -37,21 +37,22 @@ describe('Wallet Integration (e2e)', () => {
     });
 
     it('should have required environment variables', () => {
-      expect(configService.get('PRIVATE_KEY')).toBeDefined();
-      expect(configService.get('PIMLICO_API_KEY')).toBeDefined();
-      expect(configService.get('PIMLICO_RPC')).toBeDefined();
+      // Base Account environment variables
+      expect(configService.get('APP_NAME')).toBeDefined();
+      expect(configService.get('APP_LOGO_URL')).toBeDefined();
+      expect(configService.get('PAYMASTER_URL')).toBeDefined();
       expect(configService.get('BASE_SCAN_USDC')).toBeDefined();
       expect(configService.get('BASE_SCAN_EXPLORER')).toBeDefined();
     });
 
     it('should get wallet address', async () => {
-      const address = await walletService.getWalletAddress();
+      const address = await walletService.getAddress();
       expect(address).toBeDefined();
       expect(address).toMatch(/^0x[a-fA-F0-9]{40}$/);
     });
 
-    it('should get wallet URL', () => {
-      const url = walletService.getWalletUrl();
+    it('should get explorer URL', () => {
+      const url = walletService.getExplorerUrl('0xsomehash');
       expect(url).toBeDefined();
       expect(url).toContain(configService.get('BASE_SCAN_EXPLORER'));
     });
@@ -59,7 +60,7 @@ describe('Wallet Integration (e2e)', () => {
     it('should get USDC balance', async () => {
       const balance = await walletService.getUsdcBalance();
       expect(balance).toBeDefined();
-      expect(typeof balance).toBe('number');
+      expect(typeof balance).toBe('bigint');
     }, 30000); // Increased timeout for blockchain call
   });
 

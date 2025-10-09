@@ -75,16 +75,18 @@ export class WalletAgentTool {
    */
   private async checkBalance(): Promise<WalletAgentResponse> {
     try {
-      const address = await this.walletService.getWalletAddress();
+      const address = await this.walletService.getAddress();
       const balance = await this.walletService.getUsdcBalance();
-      const explorerUrl = this.walletService.getWalletUrl();
+      const explorerUrl = `${this.walletService.getExplorerUrl(
+        '',
+      )}address/${address}`;
 
       return {
         success: true,
         message: `Wallet balance retrieved successfully`,
         data: {
           address,
-          balance,
+          balance: Number(balance) / 1_000_000, // Convert from USDC's 6 decimals to human-readable format
           explorerUrl,
         },
       };
@@ -112,11 +114,11 @@ export class WalletAgentTool {
     }
 
     try {
-      const txHash = await this.walletService.sendTransaction(
-        request.parameters.to,
-        request.parameters.data || '0x',
-      );
-      const explorerUrl = this.walletService.getTransactionUrl(txHash);
+      const txHash = await this.walletService.sendTransaction({
+        to: request.parameters.to,
+        data: request.parameters.data || '0x',
+      });
+      const explorerUrl = this.walletService.getExplorerUrl(txHash);
 
       return {
         success: true,
@@ -150,10 +152,19 @@ export class WalletAgentTool {
     }
 
     try {
-      const txHash = await this.walletService.approveToken(
-        request.parameters.spender,
-      );
-      const explorerUrl = this.walletService.getTransactionUrl(txHash);
+      // Create approve token transaction data
+      const approveData = {
+        to: this.walletService['usdcAddress'], // Access the USDC address from wallet service
+        data: '', // This will be filled by the encodeFunctionData for the approve function
+      };
+
+      // Encode the approve function data
+      const data = await this.encodeApproveFunction(request.parameters.spender);
+      approveData.data = data;
+
+      // Send the transaction
+      const txHash = await this.walletService.sendTransaction(approveData);
+      const explorerUrl = this.walletService.getExplorerUrl(txHash);
 
       return {
         success: true,
@@ -170,6 +181,36 @@ export class WalletAgentTool {
         error: error.message,
       };
     }
+  }
+  /**
+   * Helper method to encode approve function data
+   */
+  private async encodeApproveFunction(spender: string): Promise<string> {
+    // Import encodeFunctionData from viem
+    const { encodeFunctionData } = await import('viem');
+
+    // Encode the approve function call
+    return encodeFunctionData({
+      abi: [
+        {
+          name: 'approve',
+          type: 'function',
+          stateMutability: 'nonpayable',
+          inputs: [
+            { name: 'spender', type: 'address' },
+            { name: 'amount', type: 'uint256' },
+          ],
+          outputs: [{ name: '', type: 'bool' }],
+        },
+      ],
+      functionName: 'approve',
+      args: [
+        spender as `0x${string}`,
+        BigInt(
+          '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+        ),
+      ],
+    });
   }
 
   /**
@@ -200,10 +241,10 @@ export class WalletAgentTool {
         }),
       );
 
-      const txHash = await this.walletService.batchTransactions(
+      const txHash = await this.walletService.sendBatchTransaction(
         formattedTransactions,
       );
-      const explorerUrl = this.walletService.getTransactionUrl(txHash);
+      const explorerUrl = this.walletService.getExplorerUrl(txHash);
 
       return {
         success: true,

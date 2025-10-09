@@ -10,6 +10,7 @@
 - **NestJS**: Backend framework
 - **Postgres and Pgvector**: Database and vector storage
 - **Redis**: Caching and message queue
+- **Viem & Permissionless**: Ethereum libraries for wallet operations
 
 ## Description
 
@@ -119,13 +120,38 @@ $ pnpm install
 Create a `.env` file in the root directory with the following variables:
 
 ```
+# OpenRouter API settings
 OPEN_ROUTER_API_KEY=your_openrouter_api_key
 OPEN_ROUTER_THINK_MODEL_PROVIDER=openai
 OPEN_ROUTER_THINK_MODEL_NAME=gpt-4o-mini
-
 OPEN_ROUTER_RESEARCH_MODEL_PROVIDER=perplexity
 OPEN_ROUTER_RESEARCH_MODEL_NAME=sonar-pro
+
+# Wallet settings
+PRIVATE_KEY=your_private_key
+PIMLICO_API_KEY=your_pimlico_api_key
+PIMLICO_RPC=your_pimlico_rpc_url
+BASE_SCAN_USDC=0x036CbD53842c5426634e7929541eC2318f3dCF7e
+BASE_SCAN_EXPLORER=https://sepolia.basescan.org
 ```
+
+See `.env.example` for a template.
+
+## Wallet Integration
+
+The system includes a comprehensive wallet integration using ERC-4337 account abstraction with Pimlico:
+
+- **Wallet Service**: Core service for blockchain interactions
+- **Wallet Agent Tool**: Tool for the agent to interact with the wallet
+- **Plan Generator Tool**: Tool to extract wallet operations from plans
+
+The wallet supports operations such as:
+- Checking wallet balance
+- Sending transactions
+- Approving tokens
+- Executing batch transactions
+
+For more details, see the [Wallet Integration Documentation](./docs/wallet-integration.md) and [Wallet Usage Guide](./docs/wallet-usage-guide.md).
 
 ## Running the app
 
@@ -164,7 +190,7 @@ The Agentic RAG system exposes an endpoint at `/agent/message` that accepts POST
 curl -X POST http://localhost:3000/agent/message \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "I want to participate in the latest Arbitrum airdrop. What steps should I take?",
+    "message": "collect ETH and earn some passive income I have 10 K USD",
     "preferences": {
       "risk_tolerance": "medium",
       "investment_amount": "$500",

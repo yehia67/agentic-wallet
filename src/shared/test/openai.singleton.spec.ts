@@ -3,52 +3,43 @@ import { ConfigService } from '@nestjs/config';
 import { OpenAISingleton } from '../singletons/openai.singleton';
 import OpenAI from 'openai';
 
-// Mock OpenAI
-jest.mock('openai', () => {
-  const mockOpenAIInstance = {
-    chat: {
-      completions: {
-        create: jest.fn().mockResolvedValue({
-          choices: [
-            {
-              message: {
-                content: 'Mock OpenAI response',
-              },
-            },
-          ],
-        }),
-      },
+// Create a mock for OpenAI
+const mockCreate = jest.fn();
+const mockOpenAI = {
+  chat: {
+    completions: {
+      create: mockCreate,
     },
-  };
+  },
+};
 
+// Mock the OpenAI constructor
+jest.mock('openai', () => {
   return {
     __esModule: true,
-    default: jest.fn().mockImplementation(() => mockOpenAIInstance),
+    default: jest.fn(() => mockOpenAI),
   };
 });
 
-// Get the mocked instance for testing
-let mockOpenAIInstance: any;
 describe('OpenAISingleton', () => {
   let service: OpenAISingleton;
   let configService: ConfigService;
 
   beforeEach(async () => {
-    // Reset the mock before each test
+    // Reset all mocks before each test
     jest.clearAllMocks();
-    
-    // Get the mock instance for testing
-    const OpenAIMock = jest.requireMock('openai').default;
-    mockOpenAIInstance = OpenAIMock.mock.results[0]?.value || {
-      chat: {
-        completions: {
-          create: jest.fn().mockResolvedValue({
-            choices: [{ message: { content: 'Mock OpenAI response' } }]
-          })
-        }
-      }
-    };
-    
+
+    // Default mock implementation for successful responses
+    mockCreate.mockResolvedValue({
+      choices: [
+        {
+          message: {
+            content: 'Mock OpenAI response',
+          },
+        },
+      ],
+    });
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OpenAISingleton,
@@ -57,9 +48,9 @@ describe('OpenAISingleton', () => {
           useValue: {
             get: jest.fn((key: string) => {
               const config: Record<string, string> = {
-                'OPEN_ROUTER_API_KEY': 'test-api-key',
-                'OPEN_ROUTER_THINK_MODEL_PROVIDER': 'openai',
-                'OPEN_ROUTER_THINK_MODEL_NAME': 'gpt-4o-mini',
+                OPEN_ROUTER_API_KEY: 'test-api-key',
+                OPEN_ROUTER_THINK_MODEL_PROVIDER: 'openai',
+                OPEN_ROUTER_THINK_MODEL_NAME: 'gpt-4o-mini',
               };
               return config[key];
             }),
@@ -92,7 +83,6 @@ describe('OpenAISingleton', () => {
   describe('think', () => {
     it('should call OpenAI with correct parameters', async () => {
       const prompt = 'Test prompt';
-      const createSpy = mockOpenAIInstance.chat.completions.create;
 
       await service.think(prompt);
 
@@ -102,7 +92,7 @@ describe('OpenAISingleton', () => {
       expect(configService.get).toHaveBeenCalledWith(
         'OPEN_ROUTER_THINK_MODEL_NAME',
       );
-      expect(createSpy).toHaveBeenCalledWith({
+      expect(mockCreate).toHaveBeenCalledWith({
         model: 'openai/gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
       });
@@ -114,7 +104,8 @@ describe('OpenAISingleton', () => {
     });
 
     it('should handle empty response', async () => {
-      mockOpenAIInstance.chat.completions.create.mockResolvedValueOnce({
+      // Mock empty response for this test only
+      mockCreate.mockResolvedValueOnce({
         choices: [{}],
       });
 
@@ -123,9 +114,8 @@ describe('OpenAISingleton', () => {
     });
 
     it('should handle error from OpenAI', async () => {
-      mockOpenAIInstance.chat.completions.create.mockRejectedValueOnce(
-        new Error('API error'),
-      );
+      // Mock rejection for this test only
+      mockCreate.mockRejectedValueOnce(new Error('API error'));
 
       await expect(service.think('Test prompt')).rejects.toThrow('API error');
     });

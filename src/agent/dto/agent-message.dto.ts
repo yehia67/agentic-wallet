@@ -14,5 +14,6 @@ export class AgentResponseDto {
   plan?: unknown;
   research?: unknown;
   decision?: unknown;
+  wallet?: unknown;
   status: 'in_progress' | 'completed' | 'failed';
 }

@@ -4,9 +4,9 @@
 
 ## Technology Used
 
-- **Agentic RAG**: Multi-agent system with planning, research, and judgment capabilities
-- **Abstract Wallet**: ERC-4337 with Pimlico for account abstraction
-- **OpenRouter**: for OpenAI and Perplexity models
+- **Agentic RAG**
+- **Abstract Wallet**: ERC-4337 with  Base Smart Wallet
+- **OpenRouter**: for OpenAI and Perplexity model
 - **NestJS**: Backend framework
 - **Postgres and Pgvector**: Database and vector storage
 - **Redis**: Caching and message queue

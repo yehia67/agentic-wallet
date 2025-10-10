@@ -5,16 +5,79 @@
 ## Technology Used
 
 - **Agentic RAG**
-- **Abstract Wallet**: ERC-4337 with  Base Smart Wallet
+- **Abstract Wallet**: ERC-4337 with Base Smart Wallet
 - **OpenRouter**: for OpenAI and Perplexity model
 - **NestJS**: Backend framework
+- **Next.js**: Frontend framework
+- **pnpm Workspaces**: Monorepo management
 - **Postgres and Pgvector**: Database and vector storage
 - **Redis**: Caching and message queue
 - **Viem & Permissionless**: Ethereum libraries for wallet operations
 
 ## Description
 
-Agentic Wallet is a NestJS application that implements an Agentic RAG (Retrieval-Augmented Generation) system for blockchain and DeFi operations. The system uses a coordinated approach with multiple specialized agents to help users achieve their on-chain financial goals.
+Agentic Wallet is a full-stack application that implements an Agentic RAG (Retrieval-Augmented Generation) system for blockchain and DeFi operations. The system uses a coordinated approach with multiple specialized agents to help users achieve their on-chain financial goals. The project is structured as a monorepo with separate frontend and backend packages.
+
+## Project Structure
+
+This project is organized as a monorepo using pnpm Workspaces:
+
+```
+agentic-wallet/
+├── package.json        # Root package.json for monorepo configuration
+├── pnpm-workspace.yaml # pnpm workspace configuration
+├── frontend/          # Next.js frontend application
+├── backend/           # NestJS backend application
+└── docs/              # Documentation files
+```
+
+## Setup and Installation
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- pnpm (v8 or higher)
+- PostgreSQL with pgvector extension
+- Redis
+
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/agentic-wallet.git
+   cd agentic-wallet
+   ```
+
+2. Install dependencies
+   ```bash
+   pnpm install
+   ```
+
+3. Set up environment variables
+   ```bash
+   cp backend/.env.example backend/.env
+   # Edit backend/.env with your configuration
+   ```
+
+### Development
+
+Start both frontend and backend in development mode:
+```bash
+pnpm dev
+```
+
+Or start them separately:
+```bash
+pnpm dev:frontend  # Starts Next.js frontend on default port 3000
+pnpm dev:backend   # Starts NestJS backend on default port 3001
+```
+
+### Building for Production
+
+```bash
+pnpm build         # Builds both frontend and backend
+pnpm start         # Starts both services in production mode
+```
 
 ## Agent Design
 

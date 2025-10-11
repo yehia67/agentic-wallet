@@ -1,0 +1,93 @@
+{
+  "name": "agentic-wallet",
+  "description": "An AI-powered agentic wallet for crypto strategies, DeFi opportunities, and airdrop qualification",
+  "repository": "https://github.com/YOUR_USERNAME/agentic-wallet",
+  "logo": "https://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "typescript", "nestjs", "nextjs", "ai", "crypto", "defi"],
+  "success_url": "/",
+  "scripts": {
+    "postdeploy": "echo 'Deployment successful!'"
+  },
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "API_PORT": {
+      "description": "Port for the backend API",
+      "value": "3001"
+    },
+    "OPEN_ROUTER_API_KEY": {
+      "description": "Open Router API key",
+      "required": true
+    },
+    "OPEN_ROUTER_THINK_MODEL_PROVIDER": {
+      "description": "Open Router think model provider",
+      "value": "openai"
+    },
+    "OPEN_ROUTER_THINK_MODEL_NAME": {
+      "description": "Open Router think model name",
+      "value": "gpt-4o-mini"
+    },
+    "OPEN_ROUTER_RESEARCH_MODEL_PROVIDER": {
+      "description": "Open Router research model provider",
+      "value": "perplexity"
+    },
+    "OPEN_ROUTER_RESEARCH_MODEL_NAME": {
+      "description": "Open Router research model name",
+      "value": "sonar-pro"
+    },
+    "ANTROPIC_API_KEY": {
+      "description": "Anthropic API key",
+      "required": true
+    },
+    "PIMLICO_API_KEY": {
+      "description": "Pimlico API key",
+      "required": true
+    },
+    "PIMLICO_RPC": {
+      "description": "Pimlico RPC URL",
+      "required": true
+    },
+    "BASE_SCAN_USDC": {
+      "description": "Base Scan USDC contract address",
+      "value": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+    },
+    "BASE_SCAN_EXPLORER": {
+      "description": "Base Scan explorer URL",
+      "value": "https://sepolia.basescan.org"
+    },
+    "PRIVATE_KEY": {
+      "description": "Private key for wallet operations",
+      "required": true
+    },
+    "NEXT_PUBLIC_API_URL": {
+      "description": "Backend API URL for frontend",
+      "value": "https://YOUR_APP_NAME.herokuapp.com"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "environments": {
+    "review": {
+      "formation": {
+        "web": {
+          "quantity": 1,
+          "size": "basic"
+        }
+      },
+      "env": {
+        "NODE_ENV": "staging"
+      }
+    }
+  }
+}

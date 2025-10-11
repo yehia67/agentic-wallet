@@ -21,10 +21,11 @@
     "heroku-postbuild": "npm install && npm run build"
   },
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+
   },
   "devDependencies": {
-    "rimraf": "^5.0.5"
   },
   "engines": {
     "node": ">=18.0.0",

@@ -9,7 +9,7 @@
 - **OpenRouter**: for OpenAI and Perplexity model
 - **NestJS**: Backend framework
 - **Next.js**: Frontend framework
-- **pnpm Workspaces**: Monorepo management
+- **npm Workspaces**: Monorepo management
 - **Postgres and Pgvector**: Database and vector storage
 - **Redis**: Caching and message queue
 - **Viem & Permissionless**: Ethereum libraries for wallet operations
@@ -20,12 +20,12 @@ Agentic Wallet is a full-stack application that implements an Agentic RAG (Retri
 
 ## Project Structure
 
-This project is organized as a monorepo using pnpm Workspaces:
+This project is organized as a monorepo using npm Workspaces:
 
 ```
 agentic-wallet/
 ├── package.json        # Root package.json for monorepo configuration
-├── pnpm-workspace.yaml # pnpm workspace configuration
+├── npm-workspace.yaml # npm workspace configuration
 ├── frontend/          # Next.js frontend application
 ├── backend/           # NestJS backend application
 └── docs/              # Documentation files
@@ -36,7 +36,7 @@ agentic-wallet/
 ### Prerequisites
 
 - Node.js (v18 or higher)
-- pnpm (v8 or higher)
+- npm (v8 or higher)
 - PostgreSQL with pgvector extension
 - Redis
 
@@ -50,7 +50,7 @@ agentic-wallet/
 
 2. Install dependencies
    ```bash
-   pnpm install
+   npm install
    ```
 
 3. Set up environment variables
@@ -63,17 +63,17 @@ agentic-wallet/
 To run both frontend and backend concurrently:
 
 ```bash
-pnpm dev
+npm dev
 ```
 
 Or run them separately:
 
 ```bash
 # Frontend only (Next.js)
-pnpm dev:frontend
+npm dev:frontend
 
 # Backend only (NestJS)
-pnpm dev:backend
+npm dev:backend
 ```
 
 ### Using the Dashboard
@@ -89,8 +89,8 @@ pnpm dev:backend
 ### Building for Production
 
 ```bash
-pnpm build         # Builds both frontend and backend
-pnpm start         # Starts both services in production mode
+npm build         # Builds both frontend and backend
+npm start         # Starts both services in production mode
 ```
 
 ## Agent Design
@@ -189,7 +189,7 @@ This section explains everything about how the agent works.
 ## Installation
 
 ```bash
-$ pnpm install
+$ npm install
 ```
 
 ## Environment Setup
@@ -232,26 +232,26 @@ For more details, see the [Wallet Integration Documentation](./docs/wallet-integ
 
 ```bash
 # development
-$ pnpm start
+$ npm start
 
 # watch mode
-$ pnpm start:dev
+$ npm start:dev
 
 # production mode
-$ pnpm start:prod
+$ npm start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ pnpm test
+$ npm test
 
 # e2e tests
-$ pnpm test:e2e
+$ npm test:e2e
 
 # test coverage
-$ pnpm test:cov
+$ npm test:cov
 ```
 
 ## API Usage

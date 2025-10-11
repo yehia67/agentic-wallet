@@ -3,29 +3,31 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "pnpm --filter backend start:dev",
-    "dev": "concurrently \"pnpm dev:frontend\" \"pnpm dev:backend\"",
-    "build:frontend": "pnpm --filter frontend build",
-    "build:backend": "pnpm --filter backend build",
-    "build": "pnpm build:backend && pnpm build:frontend",
-    "start:frontend": "pnpm --filter frontend start",
-    "start:backend": "pnpm --filter backend start:prod",
-    "start": "concurrently \"pnpm start:backend\" \"pnpm start:frontend\"",
-    "lint:frontend": "pnpm --filter frontend lint",
-    "lint:backend": "pnpm --filter backend lint",
-    "lint": "pnpm lint:backend && pnpm lint:frontend",
-    "test:backend": "pnpm --filter backend test",
-    "test:frontend": "pnpm --filter frontend test",
-    "test": "pnpm test:backend && pnpm test:frontend",
-    "heroku-postbuild": "npm install -g pnpm@8.15.0 && pnpm install && pnpm build"
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run start:dev",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm run start:prod",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "test": "npm run test:backend && npm run test:frontend",
+    "heroku-postbuild": "npm install && npm run build"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
     "rimraf": "^5.0.5"
   },
   "engines": {
-    "node": ">=18.0.0"
-  },
-  "packageManager": "pnpm@8.15.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
 }

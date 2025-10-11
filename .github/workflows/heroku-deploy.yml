@@ -1,4 +1,4 @@
-name: Deploy to Heroku
+name: Deploy to Staging
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     types: [opened, synchronize, reopened, closed]
 
 jobs:
-  deploy:
+  deploy-staging:
     runs-on: ubuntu-latest
     
     steps:
@@ -32,7 +32,7 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
           
-      - name: Deploy through Pipeline (Official CLI)
+      - name: Deploy to Staging Environment
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
@@ -40,27 +40,29 @@ jobs:
           # Authenticate with Heroku
           echo $HEROKU_API_KEY | heroku auth:token
           
-          # Add Heroku remote for agentic-wallet app
+          # Add Heroku remote for staging app
           git remote add heroku https://git.heroku.com/agentic-wallet.git
           
-          # Deploy to agentic-wallet app (which is part of staging-pipline)
+          # Deploy to staging environment via staging-pipline
           git push heroku main
           
-          # Check deployment status
+          # Check staging deployment status
           heroku releases -a agentic-wallet --limit 1
           
-      - name: Notify deployment success
+      - name: Notify staging deployment success
         if: success() && github.ref == 'refs/heads/main'
         run: |
-          echo "✅ Deployment through staging-pipline successful!"
-          echo "🌐 App URL: https://agentic-wallet.herokuapp.com"
+          echo "✅ Staging deployment successful!"
+          echo "🌐 Staging URL: https://agentic-wallet.herokuapp.com"
           echo "📊 Pipeline: staging-pipline"
+          echo "🚀 Ready for testing in staging environment"
         
-      - name: Notify deployment failure
+      - name: Notify staging deployment failure
         if: failure() && github.ref == 'refs/heads/main'
         run: |
-          echo "❌ Deployment to production failed!"
+          echo "❌ Staging deployment failed!"
           echo "Check the logs above for details."
+          echo "🔧 Fix issues before promoting to production"
 
   review-app-info:
     runs-on: ubuntu-latest

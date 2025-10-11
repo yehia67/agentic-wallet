@@ -17,7 +17,8 @@
     "lint": "pnpm lint:backend && pnpm lint:frontend",
     "test:backend": "pnpm --filter backend test",
     "test:frontend": "pnpm --filter frontend test",
-    "test": "pnpm test:backend && pnpm test:frontend"
+    "test": "pnpm test:backend && pnpm test:frontend",
+    "heroku-postbuild": "pnpm build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

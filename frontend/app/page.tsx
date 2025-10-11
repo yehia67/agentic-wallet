@@ -5,15 +5,81 @@ import { useState } from "react";
 
 export default function Home() {
   const [isLaunching, setIsLaunching] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const features = [
+    {
+      title: "AI Intelligence",
+      description: "Advanced AI that understands your crypto profile, holdings, and investment goals to provide personalized strategies.",
+      gradient: "from-purple-500 to-pink-500",
+      bgGradient: "from-white to-purple-50",
+      borderColor: "border-purple-200",
+      icon: (
+        <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          <circle cx="9" cy="9" r="1.5"/>
+          <circle cx="15" cy="9" r="1.5"/>
+          <path d="M12 17.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+        </svg>
+      )
+    },
+    {
+      title: "Prompt Chain NFTs",
+      description: "Mint your AI strategies as NFTs. Share, trade, and earn royalties when others use your successful prompt chains.",
+      gradient: "from-blue-500 to-cyan-500",
+      bgGradient: "from-white to-blue-50",
+      borderColor: "border-blue-200",
+      icon: (
+        <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+          <path d="M12 7L7 9.5v5l5 2.5 5-2.5v-5L12 7z" fill="rgba(255,255,255,0.3)"/>
+        </svg>
+      )
+    },
+    {
+      title: "On-Chain Intelligence",
+      description: "Deep blockchain analysis and DeFi opportunity discovery across multiple chains and protocols.",
+      gradient: "from-green-500 to-emerald-500",
+      bgGradient: "from-white to-green-50",
+      borderColor: "border-green-200",
+      icon: (
+        <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/>
+          <path d="M12 7L7 9.5v5l5 2.5 5-2.5v-5L12 7z" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="12" cy="12" r="2" fill="rgba(255,255,255,0.5)"/>
+        </svg>
+      )
+    },
+    {
+      title: "Smart Automation",
+      description: "Intelligent contract interactions and automated strategies that adapt to market conditions.",
+      gradient: "from-orange-500 to-red-500",
+      bgGradient: "from-white to-orange-50",
+      borderColor: "border-orange-200",
+      icon: (
+        <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+          <path d="M14 2v6h6" fill="rgba(255,255,255,0.3)"/>
+          <path d="M8 13h8M8 17h8M8 9h2" stroke="rgba(255,255,255,0.7)" strokeWidth="1" fill="none"/>
+        </svg>
+      )
+    }
+  ];
 
   const handleLaunchApp = () => {
     setIsLaunching(true);
-    // TODO: Navigate to the main app interface
+    // Navigate to dashboard
     setTimeout(() => {
-      setIsLaunching(false);
-      // Replace with actual navigation logic
-      console.log("Launching Agentic Wallet...");
-    }, 2000);
+      window.location.href = "/dashboard";
+    }, 1000);
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % features.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + features.length) % features.length);
   };
 
   return (
@@ -96,67 +162,93 @@ export default function Home() {
           <h2 className="text-6xl font-poppins font-black text-gray-900 text-center mb-20">
             Key Features
           </h2>
-          <div className="relative overflow-hidden py-8">
-            <div className="flex space-x-10 animate-slide">
-              <div className="flex-shrink-0 w-[450px] bg-gradient-to-br from-white to-purple-50 rounded-3xl p-12 border-2 border-purple-200 shadow-2xl hover:shadow-purple-300/50 transition-all hover:scale-105">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl mb-10 flex items-center justify-center shadow-lg">
-                  {/* AI Brain Icon */}
-                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    <circle cx="9" cy="9" r="1.5"/>
-                    <circle cx="15" cy="9" r="1.5"/>
-                    <path d="M12 17.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
-                  </svg>
+          
+          <div className="relative max-w-6xl mx-auto">
+            {/* Main Feature Card */}
+            <div className="relative h-[500px] mb-12">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                    index === currentSlide
+                      ? 'opacity-100 scale-100 z-10'
+                      : 'opacity-0 scale-95 z-0'
+                  }`}
+                >
+                  <div className={`h-full bg-gradient-to-br ${feature.bgGradient} rounded-[3rem] p-16 border-2 ${feature.borderColor} shadow-2xl`}>
+                    <div className="flex flex-col items-center text-center h-full justify-center">
+                      <div className={`w-28 h-28 bg-gradient-to-br ${feature.gradient} rounded-3xl mb-12 flex items-center justify-center shadow-2xl transform hover:scale-110 transition-transform`}>
+                        {feature.icon}
+                      </div>
+                      <h3 className="text-5xl font-poppins font-black text-gray-900 mb-8">
+                        {feature.title}
+                      </h3>
+                      <p className="text-2xl text-gray-700 font-inter leading-relaxed max-w-3xl">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-3xl font-poppins font-bold text-gray-900 mb-6">AI Intelligence</h3>
-                <p className="text-xl text-gray-700 font-inter leading-relaxed">
-                  Advanced AI that understands your crypto profile, holdings, and investment goals to provide personalized strategies.
-                </p>
-              </div>
+              ))}
+            </div>
 
-              <div className="flex-shrink-0 w-[450px] bg-gradient-to-br from-white to-blue-50 rounded-3xl p-12 border-2 border-blue-200 shadow-2xl hover:shadow-blue-300/50 transition-all hover:scale-105">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-3xl mb-10 flex items-center justify-center shadow-lg">
-                  {/* NFT/Token Icon */}
-                  <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-                    <path d="M12 7L7 9.5v5l5 2.5 5-2.5v-5L12 7z" fill="rgba(255,255,255,0.3)"/>
-                  </svg>
-                </div>
-                <h3 className="text-3xl font-poppins font-bold text-gray-900 mb-6">Prompt Chain NFTs</h3>
-                <p className="text-xl text-gray-700 font-inter leading-relaxed">
-                  Mint your AI strategies as NFTs. Share, trade, and earn royalties when others use your successful prompt chains.
-                </p>
-              </div>
+            {/* Navigation Arrows */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 bg-white hover:bg-gray-50 rounded-full p-4 shadow-xl hover:shadow-2xl transition-all hover:scale-110 z-20"
+              aria-label="Previous feature"
+            >
+              <svg className="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <button
+              onClick={nextSlide}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 bg-white hover:bg-gray-50 rounded-full p-4 shadow-xl hover:shadow-2xl transition-all hover:scale-110 z-20"
+              aria-label="Next feature"
+            >
+              <svg className="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
 
-              <div className="flex-shrink-0 w-[450px] bg-gradient-to-br from-white to-green-50 rounded-3xl p-12 border-2 border-green-200 shadow-2xl hover:shadow-green-300/50 transition-all hover:scale-105">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-3xl mb-10 flex items-center justify-center shadow-lg">
-                  {/* Blockchain Icon */}
-                  <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/>
-                    <path d="M12 7L7 9.5v5l5 2.5 5-2.5v-5L12 7z" fill="rgba(255,255,255,0.3)"/>
-                    <circle cx="12" cy="12" r="2" fill="rgba(255,255,255,0.5)"/>
-                  </svg>
-                </div>
-                <h3 className="text-3xl font-poppins font-bold text-gray-900 mb-6">On-Chain Intelligence</h3>
-                <p className="text-xl text-gray-700 font-inter leading-relaxed">
-                  Deep blockchain analysis and DeFi opportunity discovery across multiple chains and protocols.
-                </p>
-              </div>
+            {/* Dot Indicators */}
+            <div className="flex justify-center space-x-4">
+              {features.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`transition-all duration-300 rounded-full ${
+                    index === currentSlide
+                      ? 'w-16 h-4 bg-blue-600'
+                      : 'w-4 h-4 bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Go to feature ${index + 1}`}
+                />
+              ))}
+            </div>
 
-              <div className="flex-shrink-0 w-[450px] bg-gradient-to-br from-white to-orange-50 rounded-3xl p-12 border-2 border-orange-200 shadow-2xl hover:shadow-orange-300/50 transition-all hover:scale-105">
-                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-500 rounded-3xl mb-10 flex items-center justify-center shadow-lg">
-                  {/* Smart Contract Icon */}
-                  <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
-                    <path d="M14 2v6h6" fill="rgba(255,255,255,0.3)"/>
-                    <path d="M8 13h8M8 17h8M8 9h2" stroke="rgba(255,255,255,0.7)" strokeWidth="1" fill="none"/>
-                  </svg>
-                </div>
-                <h3 className="text-3xl font-poppins font-bold text-gray-900 mb-6">Smart Automation</h3>
-                <p className="text-xl text-gray-700 font-inter leading-relaxed">
-                  Intelligent contract interactions and automated strategies that adapt to market conditions.
-                </p>
-              </div>
+            {/* Feature Thumbnails */}
+            <div className="grid grid-cols-4 gap-6 mt-16">
+              {features.map((feature, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`p-6 rounded-2xl border-2 transition-all duration-300 ${
+                    index === currentSlide
+                      ? `${feature.borderColor} bg-gradient-to-br ${feature.bgGradient} shadow-xl scale-105`
+                      : 'border-gray-200 bg-white hover:shadow-lg hover:scale-105'
+                  }`}
+                >
+                  <div className={`w-12 h-12 bg-gradient-to-br ${feature.gradient} rounded-xl mb-3 flex items-center justify-center mx-auto`}>
+                    <div className="scale-75">{feature.icon}</div>
+                  </div>
+                  <h4 className="text-sm font-poppins font-bold text-gray-900">
+                    {feature.title}
+                  </h4>
+                </button>
+              ))}
             </div>
           </div>
         </div>

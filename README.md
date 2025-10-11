@@ -55,22 +55,36 @@ agentic-wallet/
 
 3. Set up environment variables
    ```bash
-   cp backend/.env.example backend/.env
    # Edit backend/.env with your configuration
    ```
 
 ### Development
 
-Start both frontend and backend in development mode:
+To run both frontend and backend concurrently:
+
 ```bash
 pnpm dev
 ```
 
-Or start them separately:
+Or run them separately:
+
 ```bash
-pnpm dev:frontend  # Starts Next.js frontend on default port 3000
-pnpm dev:backend   # Starts NestJS backend on default port 3001
+# Frontend only (Next.js)
+pnpm dev:frontend
+
+# Backend only (NestJS)
+pnpm dev:backend
 ```
+
+### Using the Dashboard
+
+1. Start both the frontend and backend servers
+2. Visit the landing page at `http://localhost:3001` (or the port shown in your terminal)
+3. Click "Launch App" to access the dashboard
+4. The dashboard provides a chat interface to interact with the AI agent
+5. The chat connects to the backend API at `http://localhost:3000/agent/message`
+
+**Note:** Make sure the backend is running on port 3000 for the chat to work properly.
 
 ### Building for Production
 

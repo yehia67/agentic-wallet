@@ -21,11 +21,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+          cache: 'npm'
 
       - name: Install Heroku CLI
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -40,11 +36,8 @@ jobs:
           # Authenticate with Heroku
           heroku auth:whoami || echo "Authentication failed"
           
-          # Add Heroku remote for staging app
-          git remote add heroku https://git.heroku.com/agentic-wallet.git
-          
-          # Deploy to staging environment via staging-pipline
-          git push heroku main
+          # Deploy using Heroku Git URL with API key
+          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/agentic-wallet.git HEAD:main
           
           # Check staging deployment status
           heroku releases -a agentic-wallet --limit 1

@@ -18,6 +18,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  await app.listen(process.env.API_PORT);
+  const port = process.env.PORT || process.env.API_PORT || 3001;
+  await app.listen(port);
+  console.log(`🚀 Backend API running on port ${port}`);
+  console.log(`📡 CORS enabled for all origins`);
 }
 bootstrap();

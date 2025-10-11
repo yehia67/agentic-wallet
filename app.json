@@ -55,7 +55,7 @@
     },
     "NEXT_PUBLIC_API_URL": {
       "description": "Backend API URL for frontend",
-      "value": "https://YOUR_APP_NAME.herokuapp.com"
+      "value": "https://agentic-wallet-api-68c26b243be1.herokuapp.com"
     }
   },
   "formation": {

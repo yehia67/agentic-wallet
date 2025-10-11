@@ -18,15 +18,14 @@
     "test:backend": "pnpm --filter backend test",
     "test:frontend": "pnpm --filter frontend test",
     "test": "pnpm test:backend && pnpm test:frontend",
-    "heroku-postbuild": "pnpm install && pnpm build"
+    "heroku-postbuild": "npm install -g pnpm@8.15.0 && pnpm install && pnpm build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
     "rimraf": "^5.0.5"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": "18.x"
   },
   "packageManager": "pnpm@8.15.0"
 }

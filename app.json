@@ -41,14 +41,6 @@
       "description": "Anthropic API key",
       "required": true
     },
-    "PIMLICO_API_KEY": {
-      "description": "Pimlico API key",
-      "required": true
-    },
-    "PIMLICO_RPC": {
-      "description": "Pimlico RPC URL",
-      "required": true
-    },
     "BASE_SCAN_USDC": {
       "description": "Base Scan USDC contract address",
       "value": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"

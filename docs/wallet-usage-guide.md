@@ -8,8 +8,6 @@ Before using the wallet functionality, you need to set up the following environm
 
 ```
 PRIVATE_KEY=<your-pk>
-PIMLICO_API_KEY=<your_api_key>
-PIMLICO_RPC=<rpc-url>
 BASE_SCAN_USDC=0x036CbD53842c5426634e7929541eC2318f3dCF7e
 BASE_SCAN_EXPLORER=https://sepolia.basescan.org
 ```

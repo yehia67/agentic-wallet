@@ -206,8 +206,6 @@ OPEN_ROUTER_RESEARCH_MODEL_NAME=sonar-pro
 
 # Wallet settings
 PRIVATE_KEY=your_private_key
-PIMLICO_API_KEY=your_pimlico_api_key
-PIMLICO_RPC=your_pimlico_rpc_url
 BASE_SCAN_USDC=0x036CbD53842c5426634e7929541eC2318f3dCF7e
 BASE_SCAN_EXPLORER=https://sepolia.basescan.org
 ```

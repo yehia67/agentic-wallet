@@ -6,7 +6,7 @@ This document explains how the wallet functionality has been integrated into the
 
 The wallet integration consists of several components:
 
-1. **Wallet Service**: Core service that interacts with the blockchain using Pimlico SDK
+1. **Wallet Service**: Core service that interacts with the blockchain using Base Smart Wallet
 2. **Wallet Agent Tool**: Tool that the agent uses to interact with the wallet service
 3. **Plan Generator Tool**: Tool that helps extract wallet operations from plans
 
@@ -16,7 +16,7 @@ The wallet integration consists of several components:
 
 Located in `/src/shared/services/wallet.service.ts`, this service:
 
-- Initializes the Pimlico client and smart account
+- Initializes the Base Smart Wallet client and smart account
 - Provides methods for wallet operations:
   - Getting wallet address and balance
   - Sending transactions
@@ -24,7 +24,7 @@ Located in `/src/shared/services/wallet.service.ts`, this service:
   - Executing batch transactions
 - Handles transaction URLs for block explorer integration
 
-The service uses the ERC-4337 account abstraction standard with Pimlico as the bundler and paymaster.
+The service uses the ERC-4337 account abstraction standard with Base Smart Wallet infrastructure.
 
 ### Wallet Agent Tool
 
@@ -60,8 +60,6 @@ The wallet integration requires the following environment variables:
 
 ```
 PRIVATE_KEY=<your-pk>
-PIMLICO_API_KEY=<your_api_key>
-PIMLICO_RPC=<rpc-url>
 BASE_SCAN_USDC=0x036CbD53842c5426634e7929541eC2318f3dCF7e
 BASE_SCAN_EXPLORER=https://sepolia.basescan.org
 ```
@@ -70,7 +68,8 @@ BASE_SCAN_EXPLORER=https://sepolia.basescan.org
 
 1. **Transaction Safety Analysis**: Before executing any wallet operation, the system analyzes the transaction for safety using LLM.
 2. **Error Handling**: Comprehensive error handling ensures that failures are properly reported.
-3. **Environment Variables**: Sensitive information like private keys and API keys are stored in environment variables.
+3. **Environment Variables**: Sensitive information like private keys are stored in environment variables.
+4. **Base Smart Wallet Security**: Leverages Base's built-in security features and account abstraction standards.
 
 ## Testing
 

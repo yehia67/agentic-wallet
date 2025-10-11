@@ -37,8 +37,25 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          # Authenticate with Heroku
-          echo $HEROKU_API_KEY | heroku auth:token
+          # Debug: Check if API key is available
+          echo "Checking HEROKU_API_KEY..."
+          if [ -z "$HEROKU_API_KEY" ]; then
+            echo "❌ HEROKU_API_KEY is empty or not set!"
+            echo "Available env vars:"
+            env | grep -i heroku || echo "No HEROKU env vars found"
+            exit 1
+          else
+            echo "✅ HEROKU_API_KEY is set (length: ${#HEROKU_API_KEY})"
+          fi
+          
+          # Set up Heroku authentication using .netrc (most reliable method)
+          echo "machine api.heroku.com login _ password $HEROKU_API_KEY" > ~/.netrc
+          echo "machine git.heroku.com login _ password $HEROKU_API_KEY" >> ~/.netrc
+          chmod 600 ~/.netrc
+          
+          # Verify authentication works
+          echo "Testing Heroku authentication..."
+          heroku auth:whoami
           
           # Add Heroku remote for staging app
           git remote add heroku https://git.heroku.com/agentic-wallet.git

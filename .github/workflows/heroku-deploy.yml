@@ -27,22 +27,40 @@ jobs:
         with:
           version: 8
 
-      - name: Deploy to Heroku (Production)
+      - name: Install Heroku CLI
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: akhileshns/heroku-deploy@v3.13.15
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          buildpack: "heroku/nodejs"
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          
+      - name: Deploy through Pipeline (Official CLI)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Authenticate with Heroku
+          echo $HEROKU_API_KEY | heroku auth:token
+          
+          # Add Heroku remote for agentic-wallet app
+          git remote add heroku https://git.heroku.com/agentic-wallet.git
+          
+          # Deploy to agentic-wallet app (which is part of staging-pipline)
+          git push heroku main
+          
+          # Check deployment status
+          heroku releases -a agentic-wallet --limit 1
           
       - name: Notify deployment success
         if: success() && github.ref == 'refs/heads/main'
-        run: echo "✅ Deployment to production successful!"
+        run: |
+          echo "✅ Deployment through staging-pipline successful!"
+          echo "🌐 App URL: https://agentic-wallet.herokuapp.com"
+          echo "📊 Pipeline: staging-pipline"
         
       - name: Notify deployment failure
         if: failure() && github.ref == 'refs/heads/main'
-        run: echo "❌ Deployment to production failed!"
+        run: |
+          echo "❌ Deployment to production failed!"
+          echo "Check the logs above for details."
 
   review-app-info:
     runs-on: ubuntu-latest

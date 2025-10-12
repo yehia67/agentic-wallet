@@ -16,6 +16,20 @@ lerna-debug.log*
 
 # Tests
 /coverage
+
+# Foundry
+out/
+cache/
+broadcast/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
 /.nyc_output
 
 # IDEs and editors

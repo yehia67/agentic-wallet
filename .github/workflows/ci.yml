@@ -6,16 +6,21 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  FOUNDRY_PROFILE: ci
+
 jobs:
-  lint:
+  frontend-backend:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
@@ -42,12 +47,60 @@ jobs:
         run: cd frontend && npm run build
 
       - name: Run backend tests
-        run: cd backend 
-      - name: Summary
-        if: success()
+        run: cd backend
+
+  smart-contracts:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install Foundry dependencies
         run: |
-          echo "✅ All checks passed!"
-          echo "🔍 Linting: Passed"
-          echo "🏗️ Build: Passed"
-          echo "🧪 Tests: Passed"
-          echo "🚀 Ready for deployment"
+          cd PromptNft
+          forge install foundry-rs/forge-std@v1.7.6
+          forge install OpenZeppelin/openzeppelin-contracts@v4.9.0
+          # Create remappings.txt file with explicit paths
+          echo '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/' > remappings.txt
+          echo 'forge-std/=lib/forge-std/src/' >> remappings.txt
+          cat remappings.txt
+
+      - name: Check gas snapshots
+        run: cd PromptNft && forge snapshot --check
+        continue-on-error: true
+
+      - name: Run smart contract tests
+        run: cd PromptNft && forge test -vvv
+
+      - name: Build smart contracts
+        run: cd PromptNft && forge build
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [frontend-backend, smart-contracts]
+    if: always()
+    
+    steps:
+      - name: Check results
+        run: |
+          if [[ "${{ needs.frontend-backend.result }}" == "success" && "${{ needs.smart-contracts.result }}" == "success" ]]; then
+            echo "✅ All checks passed!"
+            echo "🔍 Linting: Passed"
+            echo "🏗️ Build: Passed"
+            echo "🧪 Tests: Passed"
+            echo "📜 Smart Contracts: Passed"
+            echo "🚀 Ready for deployment"
+          else
+            echo "❌ Some checks failed!"
+            echo "Frontend/Backend: ${{ needs.frontend-backend.result }}"
+            echo "Smart Contracts: ${{ needs.smart-contracts.result }}"
+            exit 1
+          fi

@@ -385,13 +385,16 @@ curl -X POST http://localhost:3000/agent/message \
   "status": "completed"
 }
 ```
-## Deployment Guide
+## Dapp Deployment Guide
 
 See [deployment-guide.md](docs/deployment-guide.md) for detailed deployment instructions. 
 
 ## Smart Contract
 The PromptNft smart contract is deployed on base sepolia testnet
 [0x1b5a136899c22b388d17736ae04e82c37e485925](https://sepolia.basescan.org/address/0x1b5a136899c22b388d17736ae04e82c37e485925)
+
+## The Graph 
+The PromptNft indexer is deployed with the graph protocol using graph studio. You can find details on the subgraph [README.md](subgraph/README.md)
 
 ## Implementation Considerations
 

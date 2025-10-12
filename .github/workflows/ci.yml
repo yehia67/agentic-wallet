@@ -15,12 +15,12 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
@@ -54,7 +54,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -64,14 +64,21 @@ jobs:
           version: nightly
 
       - name: Install Foundry dependencies
-        run: cd PromptNft && forge install
+        run: |
+          cd PromptNft
+          forge install foundry-rs/forge-std@v1.7.6 --no-commit
+          forge install OpenZeppelin/openzeppelin-contracts@v4.9.0 --no-commit
+          # Create remappings.txt file with explicit paths
+          echo '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/' > remappings.txt
+          echo 'forge-std/=lib/forge-std/src/' >> remappings.txt
+          cat remappings.txt
 
       - name: Check gas snapshots
         run: cd PromptNft && forge snapshot --check
         continue-on-error: true
 
       - name: Run smart contract tests
-        run: cd PromptNft && forge test
+        run: cd PromptNft && forge test -vvv
 
       - name: Build smart contracts
         run: cd PromptNft && forge build

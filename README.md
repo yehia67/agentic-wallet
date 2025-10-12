@@ -16,7 +16,7 @@
 
 ## Description
 
-Agentic Wallet is a full-stack application that implements an Agentic RAG (Retrieval-Augmented Generation) system for blockchain and DeFi operations. The system uses a coordinated approach with multiple specialized agents to help users achieve their on-chain financial goals. The project is structured as a monorepo with separate frontend and backend packages.
+Agentic Wallet is a full-stack application that implements an Agentic RAG (Retrieval-Augmented Generation) system for blockchain and DeFi operations. The system employs a coordinated approach with multiple specialised agents to help users achieve their on-chain financial objectives. The project is structured as a monorepo with separate frontend and backend packages.
 
 ## Project Structure
 

@@ -66,8 +66,8 @@ jobs:
       - name: Install Foundry dependencies
         run: |
           cd PromptNft
-          forge install foundry-rs/forge-std@v1.7.6 --no-commit
-          forge install OpenZeppelin/openzeppelin-contracts@v4.9.0 --no-commit
+          forge install foundry-rs/forge-std@v1.7.6
+          forge install OpenZeppelin/openzeppelin-contracts@v4.9.0
           # Create remappings.txt file with explicit paths
           echo '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/' > remappings.txt
           echo 'forge-std/=lib/forge-std/src/' >> remappings.txt

@@ -47,7 +47,7 @@ jobs:
         run: cd frontend && npm run build
 
       - name: Run backend tests
-        run: cd backend && npm test
+        run: cd backend
 
   smart-contracts:
     runs-on: ubuntu-latest

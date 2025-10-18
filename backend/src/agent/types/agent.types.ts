@@ -79,6 +79,8 @@ export interface WalletResult {
 // Coordinator types
 export interface AgentContext {
   userIntent: string;
+  sessionId?: string;
+  mode?: 'auto' | 'planning' | 'execution';
   userPreferences?: Record<string, any>;
   planningResult?: PlanningResponse;
   researchResult?: ResearchResponse;

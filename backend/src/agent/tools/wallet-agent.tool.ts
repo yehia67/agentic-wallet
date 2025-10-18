@@ -21,7 +21,9 @@ export interface WalletAgentResponse {
   message: string;
   data?: {
     address?: string;
-    balance?: number;
+    balance?: number; // Kept for backward compatibility (ETH balance)
+    ethBalance?: number;
+    usdcBalance?: number;
     transactionHash?: string;
     explorerUrl?: string;
   };
@@ -46,7 +48,7 @@ export class WalletAgentTool {
 
       switch (request.action) {
         case 'check_balance':
-          return await this.checkBalance();
+          return await this.checkBalance(request.parameters?.to);
         case 'send_transaction':
           return await this.sendTransaction(request);
         case 'approve_token':
@@ -72,28 +74,56 @@ export class WalletAgentTool {
 
   /**
    * Check wallet balance
+   * @param targetAddress - Optional address to check balance for. If not provided, checks user's wallet
    */
-  private async checkBalance(): Promise<WalletAgentResponse> {
+  private async checkBalance(
+    targetAddress?: string,
+  ): Promise<WalletAgentResponse> {
     try {
-      const address = await this.walletService.getAddress();
-      const balance = await this.walletService.getUsdcBalance();
+      let address: string;
+      let ethBalance: bigint;
+      let usdcBalance: bigint;
+
+      if (targetAddress) {
+        // Check balance for specific address
+        address = targetAddress;
+        ethBalance = await this.walletService.getBalanceForAddress(address);
+        usdcBalance =
+          await this.walletService.getUsdcBalanceForAddress(address);
+      } else {
+        // Check user's own wallet balance
+        address = await this.walletService.getAddress();
+        ethBalance = await this.walletService.getBalance();
+        usdcBalance = await this.walletService.getUsdcBalance();
+      }
+
       const explorerUrl = `${this.walletService.getExplorerUrl(
         '',
       )}address/${address}`;
 
+      // Convert from wei to ETH (18 decimals) and USDC smallest unit to USDC (6 decimals)
+      const ethBalanceFormatted = Number(ethBalance) / 1e18;
+      const usdcBalanceFormatted = Number(usdcBalance) / 1e6;
+
       return {
         success: true,
-        message: `Wallet balance retrieved successfully`,
+        message: targetAddress
+          ? `Balance retrieved for address ${address}`
+          : `Wallet balance retrieved successfully`,
         data: {
           address,
-          balance: Number(balance) / 1_000_000, // Convert from USDC's 6 decimals to human-readable format
+          balance: ethBalanceFormatted, // Keep for backward compatibility
+          ethBalance: ethBalanceFormatted,
+          usdcBalance: usdcBalanceFormatted,
           explorerUrl,
         },
       };
     } catch (error) {
       return {
         success: false,
-        message: 'Failed to check wallet balance',
+        message: targetAddress
+          ? `Failed to check balance for address ${targetAddress}`
+          : 'Failed to check wallet balance',
         error: error.message,
       };
     }

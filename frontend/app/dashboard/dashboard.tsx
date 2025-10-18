@@ -62,9 +62,6 @@ interface AgentResponse {
   research?: Research;
   decision?: Decision;
   status: "completed" | "pending" | "failed";
-  mode?: AgentMode;
-  requiresModeSelection?: boolean;
-  suggestedMode?: AgentMode;
 }
 
 // Wallet interfaces
@@ -97,15 +94,6 @@ interface NFTMintParams {
 type DashboardMode = "chat" | "action" | "discover";
 type ActionTab = "wallet" | "nft" | "agent";
 type AgentMode = "auto" | "planning" | "execution";
-
-// Capability interface
-interface Capability {
-  name: string;
-  description: string;
-  category: string;
-  parameters: string[];
-  endpoint: string;
-}
 
 export default function Dashboard() {
   // Chat state
@@ -144,7 +132,7 @@ export default function Dashboard() {
   });
   
   // Agent capabilities
-  const [capabilities, setCapabilities] = useState<Capability[]>([]);
+  const [capabilities, setCapabilities] = useState<string[]>([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -197,7 +185,7 @@ export default function Dashboard() {
         const capabilitiesMessage: Message = {
           id: Date.now().toString(),
           role: "assistant" as const,
-          content: `I can help you with the following capabilities:\n\n${(data.capabilities as Capability[]).map((cap) => `• **${cap.name}**: ${cap.description}`).join('\n\n')}`,
+          content: `I can help you with the following capabilities:\n\n${data.capabilities.map((cap: string) => `- ${cap}`).join('\n')}`,
           timestamp: new Date(),
         };
         setMessages((prev: Message[]) => [...prev, capabilitiesMessage]);
@@ -306,27 +294,8 @@ export default function Dashboard() {
 
       const data: AgentResponse = await response.json();
 
-      // Handle mode selection requirement
-      if (data.requiresModeSelection) {
-        const modeSelectionMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: "assistant" as const,
-          content: data.message,
-          timestamp: new Date(),
-        };
-        setMessages((prev: Message[]) => [...prev, modeSelectionMessage]);
-        return;
-      }
-
       // Format the response content based on the structure
       let responseContent = data.message || "I'm sorry, I couldn't process that request.";
-      
-      // Add mode indicator
-      if (data.mode) {
-        const modeEmoji = data.mode === 'execution' ? '⚡' : '📋';
-        const modeText = data.mode === 'execution' ? 'Direct Execution' : 'Planning Mode';
-        responseContent = `${modeEmoji} **${modeText}**\n\n${responseContent}`;
-      }
       
       // Add plan details if available
       if (data.plan) {
@@ -568,7 +537,7 @@ export default function Dashboard() {
   };
 
   // Update NFT metadata
-  const updateNFTMetadata = (field: keyof NFTMetadata, value: string | number | boolean | string[]) => {
+  const updateNFTMetadata = (field: keyof NFTMetadata, value: unknown) => {
     setNftParams((prev: NFTMintParams) => ({
       ...prev,
       metadata: {
@@ -860,13 +829,13 @@ export default function Dashboard() {
                 </button>
                 <button
                   onClick={() => setActionTab("agent")}
-                  className={`px-6 py-3 rounded-xl font-poppins font-semibold transition-all ${
+                  className={`px-6 py-4 text-lg font-poppins font-semibold border-b-2 transition-all ${
                     actionTab === "agent"
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg"
-                      : "bg-white text-gray-600 hover:bg-gray-50"
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-600 hover:text-gray-900"
                   }`}
                 >
-                  🤖 Agent Operations
+                  Agent Operations
                 </button>
               </div>
             </div>
@@ -1123,12 +1092,10 @@ export default function Dashboard() {
                     
                     {capabilities.length > 0 ? (
                       <ul className="space-y-2 mb-6">
-                        {capabilities.map((capability: Capability, index: number) => (
+                        {capabilities.map((capability: string, index: number) => (
                           <li key={index} className="flex items-center">
                             <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                            <span className="font-inter text-gray-800">
-                              <strong>{capability.name}</strong>: {capability.description}
-                            </span>
+                            <span className="font-inter text-gray-800">{capability}</span>
                           </li>
                         ))}
                       </ul>

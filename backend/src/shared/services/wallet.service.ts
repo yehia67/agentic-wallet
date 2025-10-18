@@ -23,7 +23,10 @@ interface Transaction {
  * Custom error for wallet operations
  */
 class WalletOperationError extends Error {
-  constructor(message: string, public readonly cause?: Error) {
+  constructor(
+    message: string,
+    public readonly cause?: Error,
+  ) {
     super(message);
     this.name = 'WalletOperationError';
   }
@@ -60,11 +63,12 @@ export class WalletService implements OnModuleInit {
   private userAddress = '';
   private usdcAddress = '';
   private explorerUrl = '';
+  private rpcUrl = '';
 
   // Constants
   private static readonly SMART_WALLET_FACTORY =
     '0x0BA5ED0c6AA8c49038F819E587E2633c4A9F428a';
-  private static readonly BASE_SEPOLIA_RPC = 'https://sepolia.base.org';
+  private static readonly DEFAULT_BASE_SEPOLIA_RPC = 'https://sepolia.base.org';
   private static readonly BASE_CHAIN_ID = base.id;
   private static readonly BASE_SEPOLIA_CHAIN_ID = baseSepolia.id;
 
@@ -83,9 +87,12 @@ export class WalletService implements OnModuleInit {
   private initializeClients(): void {
     try {
       // Initialize public client for blockchain data access
+      const rpcUrl = this.rpcUrl || WalletService.DEFAULT_BASE_SEPOLIA_RPC;
+      this.logger.log(`Initializing client with RPC: ${rpcUrl}`);
+
       this.publicClient = createPublicClient({
         chain: baseSepolia,
-        transport: http(WalletService.BASE_SEPOLIA_RPC),
+        transport: http(rpcUrl),
       });
 
       // Initialize Base Account SDK
@@ -140,9 +147,18 @@ export class WalletService implements OnModuleInit {
     try {
       const usdcAddress = this.configService.get<string>('BASE_SCAN_USDC');
       const explorerUrl = this.configService.get<string>('BASE_SCAN_EXPLORER');
+      const rpcUrl = this.configService.get<string>('BASE_SEPOLIA_RPC');
 
       if (usdcAddress) this.usdcAddress = usdcAddress;
       if (explorerUrl) this.explorerUrl = explorerUrl;
+      if (rpcUrl) {
+        this.rpcUrl = rpcUrl;
+        this.logger.log(`Using RPC URL from environment: ${rpcUrl}`);
+      } else {
+        this.logger.warn(
+          'BASE_SEPOLIA_RPC not found in environment, using default',
+        );
+      }
 
       this.initializeClients();
 
@@ -328,6 +344,26 @@ export class WalletService implements OnModuleInit {
   }
 
   /**
+   * Get the ETH balance of any address
+   * @param address - The address to check balance for
+   * @returns Balance in wei
+   */
+  async getBalanceForAddress(address: string): Promise<bigint> {
+    try {
+      this.logger.log(`Checking ETH balance for address: ${address}`);
+      return await this.publicClient.getBalance({
+        address: address as `0x${string}`,
+      });
+    } catch (error) {
+      this.logger.error(`Failed to get balance for address ${address}`, error);
+      throw new WalletOperationError(
+        `Failed to get balance for address ${address}`,
+        error as Error,
+      );
+    }
+  }
+
+  /**
    * Get the USDC balance of the wallet
    * @returns USDC balance in smallest unit
    */
@@ -359,6 +395,47 @@ export class WalletService implements OnModuleInit {
       this.logger.error('Failed to get USDC balance', error);
       throw new WalletOperationError(
         'Failed to get USDC balance',
+        error as Error,
+      );
+    }
+  }
+
+  /**
+   * Get the USDC balance of any address
+   * @param address - The address to check USDC balance for
+   * @returns USDC balance in smallest unit (6 decimals)
+   */
+  async getUsdcBalanceForAddress(address: string): Promise<bigint> {
+    try {
+      if (!this.usdcAddress) {
+        throw new Error('USDC address not configured');
+      }
+
+      this.logger.log(`Checking USDC balance for address: ${address}`);
+
+      const balance = await this.publicClient.readContract({
+        address: this.usdcAddress as `0x${string}`,
+        abi: [
+          {
+            name: 'balanceOf',
+            type: 'function',
+            stateMutability: 'view',
+            inputs: [{ name: 'account', type: 'address' }],
+            outputs: [{ name: '', type: 'uint256' }],
+          },
+        ],
+        functionName: 'balanceOf',
+        args: [address as `0x${string}`],
+      });
+
+      return balance as bigint;
+    } catch (error) {
+      this.logger.error(
+        `Failed to get USDC balance for address ${address}`,
+        error,
+      );
+      throw new WalletOperationError(
+        `Failed to get USDC balance for address ${address}`,
         error as Error,
       );
     }

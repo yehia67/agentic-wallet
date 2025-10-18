@@ -1,0 +1,200 @@
+### Agentic Wallet - NFT Endpoints
+### Base URL: http://localhost:3001/nft
+
+### 1. NFT Minting
+
+# Mint NFT - Creative Writing Prompt
+POST http://localhost:3001/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x17156c0cf9701b09114CB3619D9f3fD937caA3A8",
+  "metadata": {
+    "name": "Creative Writing Assistant",
+    "description": "A powerful AI prompt for creative writing and storytelling",
+    "prompt": "# Creative Writing Assistant\n\nYou are a **creative writing assistant** specializing in helping users craft compelling stories. Your expertise includes:\n\n## Core Capabilities\n\n### 📝 Character Development\n- Develop interesting characters with **depth and motivation**\n- Create character arcs and backstories\n- Build authentic dialogue and voice\n\n### 📖 Story Structure\n- Design engaging plot structures with conflict and resolution\n- Help with pacing and story flow\n- Assist with narrative techniques\n\n### 🌍 World Building\n- Create immersive settings and environments\n- Develop consistent world rules and logic\n- Build atmospheric descriptions\n\n## Approach\n\n> Always encourage creativity while offering constructive suggestions\n\n**Key Principles:**\n- Ask clarifying questions to understand the user's vision\n- Adapt to different genres and writing styles\n- Provide specific, actionable feedback\n- Maintain the user's unique voice\n\n```markdown\nExample: \"What genre are you writing in? This will help me tailor my suggestions for character development and plot structure.\"\n```\n\n*Remember: Every story is unique, and your role is to help bring the writer's vision to life.*",
+    "category": "Creative",
+    "tags": ["writing", "creative", "storytelling", "ai"],
+    "complexity": 5,
+    "isPublic": true,
+    "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=400",
+    "external_url": "https://agentic-wallet.com/prompts/creative-writing"
+  },
+  "royaltyPercentage": 250,
+  "subscriptionPrice": "0.01"
+}
+
+###
+
+# Mint NFT - Blockchain Analysis Prompt
+POST http://localhost:3001/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x17156c0cf9701b09114CB3619D9f3fD937caA3A8",
+  "metadata": {
+    "name": "DeFi Analysis Expert",
+    "description": "Advanced prompt for analyzing DeFi protocols and yield opportunities",
+    "prompt": "# DeFi Analysis Expert\n\nYou are a **DeFi analysis expert** specializing in decentralized finance protocols and yield optimization strategies.\n\n## 🔍 Core Expertise\n\n### 🛡️ Protocol Analysis\n- Evaluate **smart contract security** and audit reports\n- Analyze tokenomics and governance structures\n- Assess protocol sustainability and team credibility\n- Review TVL trends and user adoption metrics\n\n### 💰 Yield Strategies\n- Identify and compare yield farming opportunities\n- Analyze liquidity mining programs\n- Evaluate staking rewards and mechanisms\n- Compare APY/APR across different protocols\n\n### ⚠️ Risk Assessment\n- **Impermanent Loss** calculations and mitigation\n- Smart contract risk evaluation\n- Market volatility impact analysis\n- Regulatory and compliance considerations\n\n### 📊 Portfolio Optimization\n- Suggest balanced DeFi strategies based on risk tolerance\n- Diversification across protocols and asset types\n- Risk-adjusted return optimization\n- Capital allocation recommendations\n\n### 📈 Market Intelligence\n- Track emerging protocols and innovations\n- Monitor governance proposals and protocol updates\n- Analyze ecosystem developments and trends\n- Provide market sentiment analysis\n\n## 🎯 Analysis Framework\n\n> **Always provide data-driven insights with clear risk/reward analysis**\n\n### Key Principles:\n1. **DYOR Emphasis** - Always stress the importance of independent research\n2. **Risk Management** - Highlight proper risk management practices\n3. **Transparency** - Clearly state assumptions and limitations\n4. **Education** - Explain complex concepts in accessible terms\n\n```solidity\n// Example: Always verify smart contract code\nfunction checkProtocolSecurity() {\n    // Audit reports, code verification, time-tested\n}\n```\n\n⚠️ **Disclaimer**: *All analysis is for educational purposes. Never provide financial advice. Always emphasize DYOR and proper risk management.*",
+    "category": "Finance",
+    "tags": ["defi", "analysis", "blockchain", "yield"],
+    "complexity": 8,
+    "isPublic": true,
+    "image": "https://images.unsplash.com/photo-1671490290865-64f3fd1e6aab?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=987",
+    "external_url": "https://agentic-wallet.com/prompts/defi-analysis"
+  },
+  "royaltyPercentage": 500,
+  "subscriptionPrice": "0.05"
+}
+
+###
+
+# Mint NFT - Code Generation Prompt
+POST http://localhost:3001/agent/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x17156c0cf9701b09114CB3619D9f3fD937caA3A8",
+  "metadata": {
+    "name": "Smart Contract Generator",
+    "description": "Specialized prompt for generating secure smart contracts",
+    "category": "Development",
+    "tags": ["solidity", "smart-contracts", "security", "development"],
+    "complexity": 9,
+    "isPublic": false,
+    "image": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=400&fit=crop",
+    "external_url": "https://agentic-wallet.com/prompts/smart-contract-generator"
+  },
+  "royaltyPercentage": 750,
+  "subscriptionPrice": "0.1"
+}
+
+###
+
+# Mint NFT - Free Public Prompt
+POST http://localhost:3001/agent/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x17156c0cf9701b09114CB3619D9f3fD937caA3A8",
+  "metadata": {
+    "name": "Basic Chat Assistant",
+    "description": "Simple conversational AI prompt for general chat",
+    "category": "General",
+    "tags": ["chat", "conversation", "basic"],
+    "complexity": 2,
+    "isPublic": true,
+    "image": "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=400&h=400&fit=crop"
+  },
+  "royaltyPercentage": 100,
+  "subscriptionPrice": "0"
+}
+
+###
+
+# Mint NFT - Educational Prompt
+POST http://localhost:3001/agent/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x17156c0cf9701b09114CB3619D9f3fD937caA3A8",
+  "metadata": {
+    "name": "Blockchain Educator",
+    "description": "Educational prompt for teaching blockchain concepts",
+    "category": "Education",
+    "tags": ["education", "blockchain", "learning", "tutorial"],
+    "complexity": 6,
+    "isPublic": true,
+    "image": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=400&fit=crop",
+    "external_url": "https://agentic-wallet.com/prompts/blockchain-educator"
+  },
+  "royaltyPercentage": 300,
+  "subscriptionPrice": "0.02"
+}
+
+###
+
+### 2. Wallet Information
+
+# Get wallet info (address and balance)
+GET http://localhost:3001/agent/nft/wallet-info
+Content-Type: application/json
+
+###
+
+### 3. Error Testing
+
+# Test with invalid address
+POST http://localhost:3001/agent/nft/mint
+Content-Type: application/json
+
+{
+  "to": "invalid-address",
+  "metadata": {
+    "name": "Test NFT",
+    "description": "This should fail due to invalid address",
+    "category": "Test",
+    "tags": ["test"],
+    "complexity": 1,
+    "isPublic": true
+  }
+}
+
+###
+
+# Test with missing required fields
+POST http://localhost:3001/agent/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x17156c0cf9701b09114CB3619D9f3fD937caA3A8",
+  "metadata": {
+    "description": "Missing name field",
+    "category": "Test",
+    "tags": ["test"],
+    "complexity": 1,
+    "isPublic": true,
+    "image": "https://via.placeholder.com/400x400?text=Test+NFT"
+  }
+}
+
+###
+
+# Test with invalid complexity (out of range)
+POST http://localhost:3001/agent/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x17156c0cf9701b09114CB3619D9f3fD937caA3A8",
+  "metadata": {
+    "name": "Invalid Complexity Test",
+    "description": "Testing with complexity > 10",
+    "category": "Test",
+    "tags": ["test"],
+    "complexity": 15,
+    "isPublic": true,
+    "image": "https://via.placeholder.com/400x400?text=Invalid+Test"
+  }
+}
+
+###
+
+# Test with invalid royalty percentage (> 1000)
+POST http://localhost:3001/agent/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x17156c0cf9701b09114CB3619D9f3fD937caA3A8",
+  "metadata": {
+    "name": "Invalid Royalty Test",
+    "description": "Testing with royalty > 10%",
+    "category": "Test",
+    "tags": ["test"],
+    "complexity": 5,
+    "isPublic": true,
+    "image": "https://via.placeholder.com/400x400?text=Royalty+Test"
+  },
+  "royaltyPercentage": 1500
+}
+
+###

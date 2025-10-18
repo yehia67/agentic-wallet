@@ -1,6 +1,155 @@
-# Agentic Abstract Wallet
+# 🤖 Agentic Abstract Wallet
 
-> This project is implemented for the [Base Batches 002: Builder Track](https://base-batches-builder-track.devfolio.co/) builder program.
+> **AI-Powered NFT Marketplace for Prompt Trading**  
+> Built for the [Base Batches 002: Builder Track](https://base-batches-builder-track.devfolio.co/) builder program.
+
+## 🌟 Overview
+
+The Agentic Abstract Wallet is a revolutionary platform that transforms AI prompts into tradeable NFTs on the Base blockchain. Users can mint, discover, and trade high-quality AI prompts as NFTs, creating a decentralized marketplace for AI expertise.
+
+## 🏗️ Architecture
+
+### Backend (NestJS + Blockchain)
+The core backend service handles NFT minting, metadata management, and blockchain interactions.
+
+**📁 Location:** `./backend/`
+
+**🚀 Quick Start:**
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+**🔧 Key Features:**
+- **NFT Minting Service**: Mint AI prompts as NFTs on Base Sepolia
+- **Metadata Management**: Store and retrieve NFT metadata with prompt content
+- **Smart Contract Integration**: Direct interaction with PromptNFT contract
+- **GraphQL Integration**: Query blockchain data via The Graph Protocol
+
+**📡 API Endpoints:**
+- `POST /nft/mint` - Mint new Prompt NFTs
+- `POST /nft/metadata` - Fetch NFT metadata from blockchain
+- `GET /agent/capabilities` - AI agent capabilities
+- `GET /agent/query` - AI query interface
+
+### Frontend (Next.js + React)
+Modern web interface for NFT discovery and interaction.
+
+**📁 Location:** `./frontend/`
+
+**🚀 Quick Start:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Smart Contracts
+Solidity contracts deployed on Base Sepolia testnet.
+
+**📁 Location:** `./contracts/`
+
+### Subgraph (The Graph Protocol)
+Blockchain data indexing for efficient NFT queries.
+
+**📁 Location:** `./subgraph/`
+
+## 🛠️ Technology Stack
+
+- **Blockchain**: Base Sepolia (Ethereum L2)
+- **Backend**: NestJS, TypeScript, ethers.js
+- **Frontend**: Next.js 14, React, TailwindCSS
+- **Smart Contracts**: Solidity, Hardhat
+- **Data Indexing**: The Graph Protocol
+- **UI Components**: Custom components with shadcn/ui inspiration
+- **Markdown Support**: ReactMarkdown with GitHub Flavored Markdown
+
+## 📚 Documentation
+
+- **API Documentation**: `./docs/api/`
+  - [NFT Endpoints](./docs/api/nft.http)
+  - [Agent Endpoints](./docs/api/agent.http)
+- **Contract ABIs**: `./backend/src/contracts/`
+- **GraphQL Schemas**: `./subgraph/schema.graphql`
+
+## 🚀 Getting Started
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd agentic-wallet
+   ```
+
+2. **Start the backend**
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   # Configure your environment variables
+   npm run start:dev
+   ```
+
+3. **Start the frontend**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+4. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:3001
+
+## 🎯 Key Features
+
+### 🎨 AI Prompt NFTs
+- **Mint Prompts**: Convert AI prompts into tradeable NFTs
+- **Rich Metadata**: Store complete prompt content on-chain
+- **Royalty System**: Creators earn from secondary sales
+- **Category System**: Organize prompts by use case
+
+### 🔍 NFT Discovery
+- **Search & Filter**: Find prompts by name, creator, or category
+- **Detailed Views**: Full-screen modal with Markdown support
+- **Real Images**: Fetch actual NFT images from tokenURI
+- **Pagination**: Efficient loading of large NFT collections
+
+### 💎 Marketplace Features
+- **On-Chain Metadata**: Reliable, permanent storage
+- **Creator Royalties**: Sustainable creator economy
+- **Base Integration**: Fast, low-cost transactions
+- **The Graph Indexing**: Real-time blockchain data
+
+## 🌐 Deployment
+
+### Backend Deployment
+The backend is designed to be deployed on any Node.js hosting platform:
+- Railway, Render, or Heroku for quick deployment
+- AWS, GCP, or Azure for production scaling
+
+### Frontend Deployment
+Optimized for Vercel deployment with Next.js:
+```bash
+npm run build
+npm run start
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+---
+
+**Built with ❤️ for the Base ecosystem**
 
 ## Technology Used
 

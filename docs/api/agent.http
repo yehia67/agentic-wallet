@@ -1,0 +1,263 @@
+### Agentic Wallet - Agent Endpoints
+### Base URL: http://localhost:3001/agent
+
+### 1. Welcome & Capabilities
+
+# Get AI capabilities and welcome message
+GET http://localhost:3001/agent/capabilities
+Content-Type: application/json
+
+###
+
+# Query endpoint (GET version with welcome)
+GET http://localhost:3001/agent/query
+Content-Type: application/json
+
+###
+
+### 2. Chat Interface
+
+# Main chat interface - Welcome message
+POST http://localhost:3001/agent/message
+Content-Type: application/json
+
+{
+  "message": "hello"
+}
+
+###
+
+# Chat interface - Check wallet balance
+POST http://localhost:3001/agent/message
+Content-Type: application/json
+
+{
+  "message": "Check my wallet balance",
+  "preferences": {
+    "risk_tolerance": "low",
+    "gas_preference": "standard"
+  }
+}
+
+###
+
+# Chat interface - Send transaction
+POST http://localhost:3001/agent/message
+Content-Type: application/json
+
+{
+  "message": "Send 0.01 ETH to 0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+  "preferences": {
+    "risk_tolerance": "medium"
+  }
+}
+
+###
+
+# Chat interface - DeFi research
+POST http://localhost:3001/agent/message
+Content-Type: application/json
+
+{
+  "message": "Research the best yield farming opportunities on Base network"
+}
+
+###
+
+### 3. Direct Tool Access
+
+# Research Agent - Market research
+POST http://localhost:3001/agent/research
+Content-Type: application/json
+
+{
+  "query": "Best DeFi yield farming opportunities on Base",
+  "context": "Looking for low-risk options with APY > 5%"
+}
+
+###
+
+# Research Agent - Token analysis
+POST http://localhost:3001/agent/research
+Content-Type: application/json
+
+{
+  "query": "Current ETH price trends and market sentiment",
+  "context": "Planning a large purchase"
+}
+
+###
+
+# Judge Agent - Plan evaluation
+POST http://localhost:3001/agent/judge
+Content-Type: application/json
+
+{
+  "plan": {
+    "goal": "Swap 1 ETH for USDC",
+    "steps": [
+      {
+        "step_number": 1,
+        "title": "Check current rates",
+        "type": "research",
+        "description": "Get current ETH/USDC exchange rates"
+      }
+    ]
+  },
+  "researchFindings": {
+    "findings": [
+      {
+        "topic": "ETH/USDC rates",
+        "summary": "Current rate: 1 ETH = 2500 USDC",
+        "relevance_score": 0.95
+      }
+    ]
+  }
+}
+
+###
+
+# Direct Wallet Operations (No AI - Fast & Free)
+
+### Get wallet address
+GET http://localhost:3001/wallet/address
+
+### Get ETH balance
+GET http://localhost:3001/wallet/balance
+
+### Get USDC balance
+GET http://localhost:3001/wallet/balance/usdc
+
+### Send transaction
+POST http://localhost:3001/wallet/send
+Content-Type: application/json
+
+{
+  "to": "0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+  "value": "0.01",
+  "data": "0x"
+}
+
+### Transfer ETH
+POST http://localhost:3001/wallet/transfer/eth
+Content-Type: application/json
+
+{
+  "to": "0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+  "amount": "0.01"
+}
+
+### Transfer USDC
+POST http://localhost:3001/wallet/transfer/usdc
+Content-Type: application/json
+
+{
+  "to": "0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+  "amount": "10.5"
+}
+
+### Send batch transactions
+POST http://localhost:3001/wallet/send/batch
+Content-Type: application/json
+
+{
+  "transactions": [
+    {
+      "to": "0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+      "value": "0.01"
+    },
+    {
+      "to": "0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+      "value": "0.02"
+    }
+  ]
+}
+
+### Send sponsored transaction
+POST http://localhost:3001/wallet/send/sponsored
+Content-Type: application/json
+
+{
+  "to": "0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+  "value": "0.01",
+  "paymasterUrl": "https://paymaster.example.com"
+}
+
+###
+
+# Direct NFT Operations (No AI - Fast & Free)
+
+### Mint NFT
+POST http://localhost:3001/nft/mint
+Content-Type: application/json
+
+{
+  "to": "0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+  "metadata": {
+    "name": "My AI Prompt NFT",
+    "description": "A valuable AI prompt for generating creative content",
+    "category": "Creative",
+    "tags": ["AI", "Creative", "Writing"],
+    "complexity": 5,
+    "isPublic": true,
+    "image": "https://example.com/image.png",
+    "external_url": "https://example.com/nft/1"
+  },
+  "royaltyPercentage": 250,
+  "subscriptionPrice": "0.01"
+}
+
+### Get NFT wallet info
+GET http://localhost:3001/nft/wallet-info
+
+###
+
+# AI Agent Operations (For complex operations requiring reasoning)
+
+### Chat with AI agent about wallet operations
+POST http://localhost:3001/agent/message
+Content-Type: application/json
+
+{
+  "message": "Check my balance and suggest what I should do with my funds"
+}
+
+###
+
+# Wallet Agent - Approve token
+POST http://localhost:3001/agent/wallet
+Content-Type: application/json
+
+{
+  "action": "approve_token",
+  "parameters": {
+    "spender": "0x1234567890123456789012345678901234567890",
+    "amount": "1000"
+  }
+}
+
+###
+
+# Wallet Agent - Batch transactions
+POST http://localhost:3001/agent/wallet
+Content-Type: application/json
+
+{
+  "action": "batch_transactions",
+  "parameters": {
+    "transactions": [
+      {
+        "to": "0x742d35Cc6634C0532925a3b8D400E4C8F8D0C4E4",
+        "value": "0.005",
+        "data": "0x"
+      },
+      {
+        "to": "0x1234567890123456789012345678901234567890",
+        "value": "0.005",
+        "data": "0x"
+      }
+    ]
+  }
+}
+
+###

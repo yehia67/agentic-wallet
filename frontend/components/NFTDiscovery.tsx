@@ -37,7 +37,8 @@ export default function NFTDiscovery({ className = '' }: NFTDiscoveryProps) {
   }> => {
     try {
       // Call the backend API to get metadata from the contract
-      const response = await fetch('http://localhost:3001/nft/metadata', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const response = await fetch(`${apiUrl}/nft/metadata`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

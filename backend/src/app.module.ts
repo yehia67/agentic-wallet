@@ -8,7 +8,13 @@ import { ConfigModule } from './config/config.module';
 import { SingletonsModule } from './shared/singletons';
 
 @Module({
-  imports: [ConfigModule, SingletonsModule, AgentModule, WalletModule, NFTModule],
+  imports: [
+    ConfigModule,
+    SingletonsModule,
+    AgentModule,
+    WalletModule,
+    NFTModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

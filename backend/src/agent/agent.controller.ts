@@ -5,9 +5,7 @@ import { CapabilitiesResponseDto } from './dto/capabilities.dto';
 
 @Controller('agent')
 export class AgentController {
-  constructor(
-    private readonly agentService: AgentService,
-  ) {}
+  constructor(private readonly agentService: AgentService) {}
 
   @Post('message')
   async processMessage(
@@ -49,5 +47,4 @@ export class AgentController {
     const message = `Evaluate this plan: ${JSON.stringify(body.plan)} with research: ${JSON.stringify(body.researchFindings)}`;
     return this.agentService.processMessage({ message });
   }
-
 }

@@ -144,7 +144,9 @@ export class NFTService {
         name: mintDto.metadata.name,
         description: mintDto.metadata.description,
         prompt: mintDto.metadata.prompt, // Include the actual AI prompt text
-        image: mintDto.metadata.image || 'https://via.placeholder.com/400x400?text=AI+Prompt+NFT',
+        image:
+          mintDto.metadata.image ||
+          'https://via.placeholder.com/400x400?text=AI+Prompt+NFT',
         external_url: mintDto.metadata.external_url,
         category: mintDto.metadata.category,
         tags: mintDto.metadata.tags,
@@ -163,7 +165,7 @@ export class NFTService {
             trait_type: 'Public',
             value: mintDto.metadata.isPublic ? 'Yes' : 'No',
           },
-          ...(mintDto.metadata.tags?.map(tag => ({
+          ...(mintDto.metadata.tags?.map((tag) => ({
             trait_type: 'Tag',
             value: tag,
           })) || []),
@@ -235,9 +237,10 @@ export class NFTService {
         success: true,
         transactionHash: tx.hash,
         explorerUrl,
-        message: tokenId !== undefined 
-          ? `NFT minted successfully! Token ID: ${tokenId}`
-          : 'NFT minted successfully! Check the transaction for token ID.',
+        message:
+          tokenId !== undefined
+            ? `NFT minted successfully! Token ID: ${tokenId}`
+            : 'NFT minted successfully! Check the transaction for token ID.',
       };
 
       // Only include tokenId if it's defined
@@ -293,7 +296,7 @@ export class NFTService {
 
       // First, get the tokenURI which contains the JSON metadata
       const tokenURI = await this.contract.tokenURI(tokenId);
-      
+
       if (!tokenURI) {
         throw new Error('No tokenURI found for this token');
       }
@@ -302,10 +305,13 @@ export class NFTService {
 
       // Parse the tokenURI - it could be a data URI or HTTP URL
       let metadataJson;
-      
+
       if (tokenURI.startsWith('data:application/json;base64,')) {
         // Decode base64 JSON
-        const base64Data = tokenURI.replace('data:application/json;base64,', '');
+        const base64Data = tokenURI.replace(
+          'data:application/json;base64,',
+          '',
+        );
         const jsonString = Buffer.from(base64Data, 'base64').toString('utf-8');
         metadataJson = JSON.parse(jsonString);
       } else if (tokenURI.startsWith('http')) {
@@ -337,7 +343,7 @@ export class NFTService {
         image: metadataJson.image, // This is what we need!
         external_url: metadataJson.external_url,
         attributes: metadataJson.attributes,
-        
+
         // Also from tokenURI (the JSON contains these fields too)
         category: metadataJson.category,
         tags: metadataJson.tags,
@@ -349,9 +355,11 @@ export class NFTService {
       this.logger.log(`Combined metadata:`, combinedMetadata);
       return combinedMetadata;
     } catch (error) {
-      this.logger.error(`Error getting NFT metadata: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error getting NFT metadata: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
-
 }

@@ -23,7 +23,10 @@ interface Transaction {
  * Custom error for wallet operations
  */
 class WalletOperationError extends Error {
-  constructor(message: string, public readonly cause?: Error) {
+  constructor(
+    message: string,
+    public readonly cause?: Error,
+  ) {
     super(message);
     this.name = 'WalletOperationError';
   }
@@ -86,7 +89,7 @@ export class WalletService implements OnModuleInit {
       // Initialize public client for blockchain data access
       const rpcUrl = this.rpcUrl || WalletService.DEFAULT_BASE_SEPOLIA_RPC;
       this.logger.log(`Initializing client with RPC: ${rpcUrl}`);
-      
+
       this.publicClient = createPublicClient({
         chain: baseSepolia,
         transport: http(rpcUrl),
@@ -152,7 +155,9 @@ export class WalletService implements OnModuleInit {
         this.rpcUrl = rpcUrl;
         this.logger.log(`Using RPC URL from environment: ${rpcUrl}`);
       } else {
-        this.logger.warn('BASE_SEPOLIA_RPC not found in environment, using default');
+        this.logger.warn(
+          'BASE_SEPOLIA_RPC not found in environment, using default',
+        );
       }
 
       this.initializeClients();
@@ -351,7 +356,10 @@ export class WalletService implements OnModuleInit {
       });
     } catch (error) {
       this.logger.error(`Failed to get balance for address ${address}`, error);
-      throw new WalletOperationError(`Failed to get balance for address ${address}`, error as Error);
+      throw new WalletOperationError(
+        `Failed to get balance for address ${address}`,
+        error as Error,
+      );
     }
   }
 
@@ -422,7 +430,10 @@ export class WalletService implements OnModuleInit {
 
       return balance as bigint;
     } catch (error) {
-      this.logger.error(`Failed to get USDC balance for address ${address}`, error);
+      this.logger.error(
+        `Failed to get USDC balance for address ${address}`,
+        error,
+      );
       throw new WalletOperationError(
         `Failed to get USDC balance for address ${address}`,
         error as Error,

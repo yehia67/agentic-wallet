@@ -76,36 +76,39 @@ export class WalletAgentTool {
    * Check wallet balance
    * @param targetAddress - Optional address to check balance for. If not provided, checks user's wallet
    */
-  private async checkBalance(targetAddress?: string): Promise<WalletAgentResponse> {
+  private async checkBalance(
+    targetAddress?: string,
+  ): Promise<WalletAgentResponse> {
     try {
       let address: string;
       let ethBalance: bigint;
       let usdcBalance: bigint;
-      
+
       if (targetAddress) {
         // Check balance for specific address
         address = targetAddress;
         ethBalance = await this.walletService.getBalanceForAddress(address);
-        usdcBalance = await this.walletService.getUsdcBalanceForAddress(address);
+        usdcBalance =
+          await this.walletService.getUsdcBalanceForAddress(address);
       } else {
         // Check user's own wallet balance
         address = await this.walletService.getAddress();
         ethBalance = await this.walletService.getBalance();
         usdcBalance = await this.walletService.getUsdcBalance();
       }
-      
+
       const explorerUrl = `${this.walletService.getExplorerUrl(
         '',
       )}address/${address}`;
-      
+
       // Convert from wei to ETH (18 decimals) and USDC smallest unit to USDC (6 decimals)
       const ethBalanceFormatted = Number(ethBalance) / 1e18;
       const usdcBalanceFormatted = Number(usdcBalance) / 1e6;
 
       return {
         success: true,
-        message: targetAddress 
-          ? `Balance retrieved for address ${address}` 
+        message: targetAddress
+          ? `Balance retrieved for address ${address}`
           : `Wallet balance retrieved successfully`,
         data: {
           address,
@@ -118,8 +121,8 @@ export class WalletAgentTool {
     } catch (error) {
       return {
         success: false,
-        message: targetAddress 
-          ? `Failed to check balance for address ${targetAddress}` 
+        message: targetAddress
+          ? `Failed to check balance for address ${targetAddress}`
           : 'Failed to check wallet balance',
         error: error.message,
       };

@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OpenAISingleton, PerplexitySingleton } from '../shared/singletons';
-import { AgentMessageDto, AgentResponseDto, AgentMode } from './dto/agent-message.dto';
+import {
+  AgentMessageDto,
+  AgentResponseDto,
+  AgentMode,
+} from './dto/agent-message.dto';
 import { CapabilitiesResponseDto, CapabilityDto } from './dto/capabilities.dto';
 import {
   AgentContext,
@@ -21,7 +25,10 @@ import { NFTService } from './services/nft.service';
 @Injectable()
 export class AgentService {
   private readonly logger = new Logger(AgentService.name);
-  private readonly sessionStore = new Map<string, { mode?: AgentMode; preferences?: Record<string, any> }>();
+  private readonly sessionStore = new Map<
+    string,
+    { mode?: AgentMode; preferences?: Record<string, any> }
+  >();
 
   constructor(
     private readonly openAI: OpenAISingleton,
@@ -35,8 +42,12 @@ export class AgentService {
     try {
       // Get or create session
       const sessionId = dto.sessionId || 'default';
-      const session = this.getOrCreateSession(sessionId, dto.mode, dto.preferences);
-      
+      const session = this.getOrCreateSession(
+        sessionId,
+        dto.mode,
+        dto.preferences,
+      );
+
       // Initialize agent context
       const context: AgentContext = {
         userIntent: dto.message,
@@ -54,7 +65,7 @@ export class AgentService {
 
       // Determine execution mode
       const modeDecision = this.determineExecutionMode(context);
-      
+
       if (modeDecision.requiresModeSelection) {
         return {
           message: modeDecision.message,
@@ -143,21 +154,24 @@ Ready to help! What would you like to do?`;
     const capabilities: CapabilityDto[] = [
       {
         name: 'Planning Agent',
-        description: 'Creates detailed execution plans for blockchain operations',
+        description:
+          'Creates detailed execution plans for blockchain operations',
         category: 'Planning',
         parameters: ['userIntent', 'userPreferences', 'previousFeedback'],
         endpoint: '/agent/message',
       },
       {
         name: 'Research Agent',
-        description: 'Researches market data, protocols, and blockchain information',
+        description:
+          'Researches market data, protocols, and blockchain information',
         category: 'Research',
         parameters: ['query', 'context'],
         endpoint: '/agent/research',
       },
       {
         name: 'Judge Agent',
-        description: 'Evaluates transaction safety and provides risk assessments',
+        description:
+          'Evaluates transaction safety and provides risk assessments',
         category: 'Safety',
         parameters: ['plan', 'researchFindings'],
         endpoint: '/agent/judge',
@@ -173,7 +187,12 @@ Ready to help! What would you like to do?`;
         name: 'NFT Minting',
         description: 'Create and mint custom NFTs with metadata',
         category: 'NFT',
-        parameters: ['to', 'metadata', 'royaltyPercentage', 'subscriptionPrice'],
+        parameters: [
+          'to',
+          'metadata',
+          'royaltyPercentage',
+          'subscriptionPrice',
+        ],
         endpoint: '/agent/nft/mint',
       },
     ];
@@ -181,7 +200,8 @@ Ready to help! What would you like to do?`;
     return {
       welcome_message: this.getWelcomeMessage(),
       capabilities,
-      platform_info: 'Agentic Wallet Platform - AI-powered blockchain operations with multi-agent coordination',
+      platform_info:
+        'Agentic Wallet Platform - AI-powered blockchain operations with multi-agent coordination',
     };
   }
 
@@ -499,9 +519,8 @@ Ready to help! What would you like to do?`;
   ): Promise<WalletAction | undefined> {
     try {
       // Use the plan generator tool to extract wallet operations
-      const walletOperation = await this.planGenerator.extractWalletOperations(
-        plan,
-      );
+      const walletOperation =
+        await this.planGenerator.extractWalletOperations(plan);
       return walletOperation as WalletAction | undefined;
     } catch (error) {
       this.logger.error(
@@ -574,7 +593,11 @@ Ready to help! What would you like to do?`;
   }
 
   // Session management methods
-  private getOrCreateSession(sessionId: string, mode?: AgentMode, preferences?: Record<string, any>) {
+  private getOrCreateSession(
+    sessionId: string,
+    mode?: AgentMode,
+    preferences?: Record<string, any>,
+  ) {
     if (!this.sessionStore.has(sessionId)) {
       this.sessionStore.set(sessionId, {
         mode: mode || 'auto',
@@ -584,7 +607,10 @@ Ready to help! What would you like to do?`;
     return this.sessionStore.get(sessionId)!;
   }
 
-  private updateSession(sessionId: string, updates: { mode?: AgentMode; preferences?: Record<string, any> }) {
+  private updateSession(
+    sessionId: string,
+    updates: { mode?: AgentMode; preferences?: Record<string, any> },
+  ) {
     const session = this.sessionStore.get(sessionId) || {};
     this.sessionStore.set(sessionId, { ...session, ...updates });
   }
@@ -631,21 +657,28 @@ Ready to help! What would you like to do?`;
     ];
 
     // Check for direct execution patterns
-    if (executionPatterns.some(pattern => pattern.test(message))) {
+    if (executionPatterns.some((pattern) => pattern.test(message))) {
       return { mode: 'execution' };
     }
 
     // Check for planning patterns
-    if (planningPatterns.some(pattern => pattern.test(message))) {
+    if (planningPatterns.some((pattern) => pattern.test(message))) {
       return { mode: 'planning' };
     }
 
     // Ambiguous cases - ask user for preference
     const ambiguousPatterns = [
-      /eth/, /btc/, /usdc/, /token/, /crypto/, /blockchain/, /swap/, /trade/
+      /eth/,
+      /btc/,
+      /usdc/,
+      /token/,
+      /crypto/,
+      /blockchain/,
+      /swap/,
+      /trade/,
     ];
 
-    if (ambiguousPatterns.some(pattern => pattern.test(message))) {
+    if (ambiguousPatterns.some((pattern) => pattern.test(message))) {
       return {
         mode: 'auto',
         requiresModeSelection: true,
@@ -656,7 +689,7 @@ Ready to help! What would you like to do?`;
 
 📋 **Create a plan** - I'll research and create a detailed strategy with risk assessment (recommended for complex operations like DeFi strategies)
 
-Please specify your preference or I'll default to execution mode.`
+Please specify your preference or I'll default to execution mode.`,
       };
     }
 
@@ -665,7 +698,9 @@ Please specify your preference or I'll default to execution mode.`
   }
 
   // Direct execution method for simple tasks
-  private async executeDirectAction(context: AgentContext): Promise<AgentResponseDto> {
+  private async executeDirectAction(
+    context: AgentContext,
+  ): Promise<AgentResponseDto> {
     const message = context.userIntent.toLowerCase();
 
     try {
@@ -676,57 +711,64 @@ Please specify your preference or I'll default to execution mode.`
           const address = addressMatch[0];
           const result = await this.walletTool.execute({
             action: 'check_balance',
-            parameters: { to: address }
+            parameters: { to: address },
           });
 
           const ethBalance = result.data?.ethBalance || 0;
           const usdcBalance = result.data?.usdcBalance || 0;
-          
+
           return {
             message: `Balance for ${address}:\n• ETH: ${ethBalance.toFixed(6)} ETH\n• USDC: ${usdcBalance.toFixed(2)} USDC`,
             wallet: result,
             status: 'completed',
-            mode: 'execution'
+            mode: 'execution',
           };
         } else if (message.includes('my balance')) {
           const result = await this.walletTool.execute({
-            action: 'check_balance'
+            action: 'check_balance',
           });
 
           const ethBalance = result.data?.ethBalance || 0;
           const usdcBalance = result.data?.usdcBalance || 0;
-          
+
           return {
             message: `Your wallet balance:\n• ETH: ${ethBalance.toFixed(6)} ETH\n• USDC: ${usdcBalance.toFixed(2)} USDC`,
             wallet: result,
             status: 'completed',
-            mode: 'execution'
+            mode: 'execution',
           };
         }
       }
 
       // Wallet creation
-      if (message.includes('create wallet') || message.includes('generate wallet')) {
+      if (
+        message.includes('create wallet') ||
+        message.includes('generate wallet')
+      ) {
         // For wallet creation, we might want to use a simple planning step
         // to ensure the user understands what they're doing
         const quickPlan = await this.generateQuickPlan(context.userIntent);
         return {
           message: quickPlan,
           status: 'completed',
-          mode: 'execution'
+          mode: 'execution',
         };
       }
 
       // If we can't handle it directly, fall back to planning
-      this.logger.log('Direct execution not possible, falling back to planning mode');
-      return await this.runCoordinatorWorkflow({ ...context, mode: 'planning' });
-
+      this.logger.log(
+        'Direct execution not possible, falling back to planning mode',
+      );
+      return await this.runCoordinatorWorkflow({
+        ...context,
+        mode: 'planning',
+      });
     } catch (error) {
       this.logger.error(`Direct execution failed: ${error.message}`);
       return {
         message: `Direct execution failed: ${error.message}. Let me create a plan instead.`,
         status: 'failed',
-        mode: 'execution'
+        mode: 'execution',
       };
     }
   }
@@ -739,12 +781,14 @@ Please specify your preference or I'll default to execution mode.`
 Keep it concise and practical. If it's a simple task, provide direct instructions.
 If it requires caution, mention key risks briefly.`;
 
-      const response = await this.openAI.think(`System: You are a helpful blockchain assistant. Provide concise, practical responses.\n\nUser: ${prompt}`);
+      const response = await this.openAI.think(
+        `System: You are a helpful blockchain assistant. Provide concise, practical responses.\n\nUser: ${prompt}`,
+      );
 
       return response || 'I can help you with that task.';
     } catch (error) {
       this.logger.error(`Quick plan generation failed: ${error.message}`);
-      return 'I can help you with that. Please provide more details about what you\'d like to do.';
+      return "I can help you with that. Please provide more details about what you'd like to do.";
     }
   }
 }

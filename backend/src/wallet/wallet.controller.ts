@@ -57,7 +57,7 @@ export class WalletController {
     try {
       const balanceWei = await this.walletService.getBalance();
       const balance = formatEther(balanceWei);
-      
+
       return {
         balance,
         balanceWei: balanceWei.toString(),
@@ -80,7 +80,7 @@ export class WalletController {
       const balanceRaw = await this.walletService.getUsdcBalance();
       // USDC has 6 decimals
       const balance = (Number(balanceRaw) / 1e6).toString();
-      
+
       return {
         balance,
         balanceRaw: balanceRaw.toString(),
@@ -103,13 +103,16 @@ export class WalletController {
   ): Promise<{ hash: string; explorerUrl: string }> {
     try {
       const { to, value, data = '0x' } = sendDto;
-      
+
       if (!to) {
-        throw new HttpException('Recipient address is required', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Recipient address is required',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const valueWei = value ? parseEther(value) : 0n;
-      
+
       const hash = await this.walletService.sendTransaction({
         to,
         value: valueWei,
@@ -137,17 +140,20 @@ export class WalletController {
   ): Promise<{ hash: string; explorerUrl: string }> {
     try {
       const { transactions } = batchDto;
-      
+
       if (!transactions || transactions.length === 0) {
-        throw new HttpException('Transactions array is required', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Transactions array is required',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
-      const txs = transactions.map(tx => ({
+      const txs = transactions.map((tx) => ({
         to: tx.to,
         value: tx.value ? parseEther(tx.value) : 0n,
         data: tx.data || '0x',
       }));
-      
+
       const hash = await this.walletService.sendBatchTransaction(txs);
       const explorerUrl = this.walletService.getExplorerUrl(hash);
 
@@ -170,17 +176,23 @@ export class WalletController {
   ): Promise<{ hash: string; explorerUrl: string }> {
     try {
       const { to, value, data = '0x', paymasterUrl } = body;
-      
+
       if (!to) {
-        throw new HttpException('Recipient address is required', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Recipient address is required',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       if (!paymasterUrl) {
-        throw new HttpException('Paymaster URL is required', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Paymaster URL is required',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const valueWei = value ? parseEther(value) : 0n;
-      
+
       const hash = await this.walletService.sendSponsoredTransaction(
         {
           to,
@@ -211,9 +223,12 @@ export class WalletController {
   ): Promise<{ hash: string; explorerUrl: string }> {
     try {
       const { to, amount } = transferDto;
-      
+
       if (!to || !amount) {
-        throw new HttpException('Recipient address and amount are required', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Recipient address and amount are required',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const amountWei = parseEther(amount);
@@ -239,9 +254,12 @@ export class WalletController {
   ): Promise<{ hash: string; explorerUrl: string }> {
     try {
       const { to, amount } = transferDto;
-      
+
       if (!to || !amount) {
-        throw new HttpException('Recipient address and amount are required', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Recipient address and amount are required',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       // Convert USDC amount to smallest unit (6 decimals)

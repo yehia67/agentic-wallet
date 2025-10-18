@@ -20,13 +20,11 @@ export class NFTController {
    * Mint a new NFT
    */
   @Post('mint')
-  async mintNFT(
-    @Body() mintDto: MintNFTDto,
-  ): Promise<MintNFTResponseDto> {
+  async mintNFT(@Body() mintDto: MintNFTDto): Promise<MintNFTResponseDto> {
     this.logger.log('Received mintDto:', JSON.stringify(mintDto, null, 2));
     this.logger.log('mintDto.metadata:', mintDto.metadata);
     this.logger.log('typeof mintDto.metadata:', typeof mintDto.metadata);
-    
+
     // Additional validation check
     if (!mintDto || typeof mintDto !== 'object') {
       return {
@@ -34,7 +32,7 @@ export class NFTController {
         error: 'Invalid request body - expected object',
       };
     }
-    
+
     if (!mintDto.metadata || typeof mintDto.metadata !== 'object') {
       return {
         success: false,
@@ -42,7 +40,10 @@ export class NFTController {
       };
     }
 
-    if (!mintDto.metadata.prompt || typeof mintDto.metadata.prompt !== 'string') {
+    if (
+      !mintDto.metadata.prompt ||
+      typeof mintDto.metadata.prompt !== 'string'
+    ) {
       return {
         success: false,
         error: 'Prompt field is required and must be a non-empty string',

@@ -123,17 +123,99 @@ Blockchain data indexing for efficient NFT queries.
 
 ## 🌐 Deployment
 
-### Backend Deployment
-The backend is designed to be deployed on any Node.js hosting platform:
+### Quick Deployment (Heroku)
+
+**Deploy Frontend:**
+```bash
+npm run deploy:frontend
+```
+
+**Deploy Backend:**
+```bash
+npm run deploy:backend
+```
+
+That's it! The deployment scripts handle everything automatically:
+- ✅ Creates git subtree for the specific directory
+- ✅ Handles diverged git history with force push
+- ✅ Shows deployment progress with clear messages
+- ✅ Provides deployment URL and helpful commands
+
+### How It Works
+
+The project uses **git subtree** to deploy only the relevant directory to Heroku:
+- Frontend deploys from `/frontend` directory only
+- Backend deploys from `/backend` directory only
+- No file copying or configuration switching needed
+- Each directory has its own `package.json` and `Procfile`
+
+### Deployment Scripts
+
+Located in `/scripts/`:
+- `deploy-frontend.sh` - Deploys frontend to Heroku
+- `deploy-backend.sh` - Deploys backend to Heroku
+
+These scripts:
+1. Check if Heroku remote exists (adds it if missing)
+2. Create a git subtree containing only the target directory
+3. Force push to Heroku (handles diverged history safely)
+4. Show deployment URL and helpful post-deployment commands
+
+### Manual Deployment
+
+If you prefer manual deployment:
+
+**Frontend:**
+```bash
+git push heroku `git subtree split --prefix frontend main`:main --force
+```
+
+**Backend:**
+```bash
+git push heroku `git subtree split --prefix backend main`:main --force
+```
+
+### Other Deployment Options
+
+**Backend:**
 - Railway, Render, or Heroku for quick deployment
 - AWS, GCP, or Azure for production scaling
 
-### Frontend Deployment
-Optimized for Vercel deployment with Next.js:
+**Frontend:**
+- Vercel (optimized for Next.js)
+- Netlify
+- Any static hosting platform
+
+### Environment Variables
+
+**Frontend (Heroku):**
 ```bash
-npm run build
-npm run start
+heroku config:set NEXT_PUBLIC_API_URL=https://your-backend-url.herokuapp.com -a agentic-wallet
 ```
+
+**Backend (Heroku):**
+```bash
+heroku config:set \
+  OPEN_ROUTER_API_KEY=your_key \
+  PRIVATE_KEY=your_key \
+  BASE_SEPOLIA_RPC=your_rpc_url \
+  -a agentic-wallet-api
+```
+
+### Troubleshooting
+
+**Deployment rejected (non-fast-forward)?**
+- This is normal with git subtree
+- The scripts automatically handle this with `--force`
+- Just run the deploy command again
+
+**View deployment logs:**
+```bash
+heroku logs --tail -a agentic-wallet        # Frontend
+heroku logs --tail -a agentic-wallet-api    # Backend
+```
+
+For detailed deployment instructions, see [deployment-guide.md](docs/deployment-guide.md)
 
 ## 🤝 Contributing
 

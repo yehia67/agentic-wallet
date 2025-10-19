@@ -42,12 +42,10 @@ heroku info -a agentic-wallet-api
 # Easy way: Use npm script (recommended!)
 npm run deploy:frontend
 
-# Or manually with git subtree
-git subtree push --prefix frontend https://git.heroku.com/agentic-wallet.git main
+# Or manually with git subtree split (handles diverged history)
+git push heroku `git subtree split --prefix frontend main`:main --force
 
-# Or using Heroku CLI with subtree
-heroku git:remote -a agentic-wallet
-git subtree push --prefix frontend heroku main
+# Note: We use --force because Heroku's history may diverge from local
 ```
 
 ### Deploy Backend Only
@@ -55,12 +53,10 @@ git subtree push --prefix frontend heroku main
 # Easy way: Use npm script (recommended!)
 npm run deploy:backend
 
-# Or manually with git subtree
-git subtree push --prefix backend https://git.heroku.com/agentic-wallet-api.git main
+# Or manually with git subtree split (handles diverged history)
+git push heroku `git subtree split --prefix backend main`:main --force
 
-# Or using Heroku CLI with subtree
-heroku git:remote -a agentic-wallet-api
-git subtree push --prefix backend heroku main
+# Note: We use --force because Heroku's history may diverge from local
 ```
 
 **Note**: The backend has its own `package.json`, `Procfile`, and `heroku.yml` in the `/backend` directory. No config file copying needed!
@@ -237,6 +233,37 @@ Backend deployments are currently manual. To automate:
 ## Troubleshooting
 
 ### Common Issues
+
+#### 0. Git Subtree Push Rejected (non-fast-forward)
+**Problem**: `npm run deploy:frontend` or `npm run deploy:backend` fails with:
+```
+! [rejected]        xxx -> main (non-fast-forward)
+error: failed to push some refs
+hint: Updates were rejected because the tip of your current branch is behind
+```
+
+**Root Cause**: Heroku's git history has diverged from your local subtree history. This is normal with git subtree deployments.
+
+**Solution**: The npm scripts now automatically handle this with `--force` flag. Just run:
+```bash
+npm run deploy:frontend
+# or
+npm run deploy:backend
+```
+
+**Manual Solution** (if needed):
+```bash
+# For frontend
+git push heroku `git subtree split --prefix frontend main`:main --force
+
+# For backend
+git push heroku `git subtree split --prefix backend main`:main --force
+```
+
+**Why this works**: 
+- `git subtree split` creates a new commit tree containing only the subdirectory
+- `--force` overwrites Heroku's diverged history
+- This is safe because Heroku rebuilds from the pushed code anyway
 
 #### 1. Wrong App Deployment
 **Problem**: Deployed backend code to frontend app or vice versa.

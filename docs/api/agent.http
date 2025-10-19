@@ -196,6 +196,7 @@ Content-Type: application/json
   "metadata": {
     "name": "My AI Prompt NFT",
     "description": "A valuable AI prompt for generating creative content",
+    "prompt": "You are a creative assistant. Help users:\n\n1. **Generate Ideas**: Brainstorm creative concepts\n2. **Refine Content**: Improve writing quality\n3. **Provide Feedback**: Offer constructive suggestions\n\nAlways be encouraging and supportive!",
     "category": "Creative",
     "tags": ["AI", "Creative", "Writing"],
     "complexity": 5,
@@ -225,7 +226,7 @@ Content-Type: application/json
 ###
 
 # Wallet Agent - Approve token
-POST http://localhost:3001/agent/wallet
+POST http://localhost:3001/wallet
 Content-Type: application/json
 
 {
@@ -239,7 +240,7 @@ Content-Type: application/json
 ###
 
 # Wallet Agent - Batch transactions
-POST http://localhost:3001/agent/wallet
+POST http://localhost:3001/wallet
 Content-Type: application/json
 
 {

@@ -78,6 +78,7 @@ interface WalletInfo {
 interface NFTMetadata {
   name: string;
   description: string;
+  prompt: string;
   category: string;
   tags: string[];
   complexity: number;
@@ -134,6 +135,7 @@ export default function Dashboard() {
     metadata: {
       name: "",
       description: "",
+      prompt: "",
       category: "General",
       tags: [],
       complexity: 1,
@@ -142,6 +144,15 @@ export default function Dashboard() {
     royaltyPercentage: 100,
     subscriptionPrice: "0",
   });
+  
+  // Tag input state
+  const [tagInput, setTagInput] = useState("");
+  const [availableTags] = useState<string[]>([
+    "AI", "Creative", "Writing", "DeFi", "Analysis", "Blockchain",
+    "Yield", "Development", "Solidity", "Smart Contracts", "Security",
+    "Education", "Learning", "Tutorial", "Chat", "Conversation",
+    "Finance", "Trading", "NFT", "Web3"
+  ]);
   
   // Agent capabilities
   const [capabilities, setCapabilities] = useState<Capability[]>([]);
@@ -248,7 +259,7 @@ export default function Dashboard() {
     setIsLoading(true);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-      const response = await fetch(`${apiUrl}/agent/nft/wallet-info`);
+      const response = await fetch(`${apiUrl}/nft/wallet-info`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch NFT wallet info: ${response.status}`);
@@ -493,12 +504,12 @@ export default function Dashboard() {
 
   // Handle NFT minting
   const handleMintNFT = async () => {
-    if (!nftParams.to || !nftParams.metadata.name || !nftParams.metadata.description || isLoading) return;
+    if (!nftParams.to || !nftParams.metadata.name || !nftParams.metadata.description || !nftParams.metadata.prompt || isLoading) return;
     
     setIsLoading(true);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-      const response = await fetch(`${apiUrl}/agent/nft/mint`, {
+      const response = await fetch(`${apiUrl}/nft/mint`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -529,6 +540,7 @@ export default function Dashboard() {
         metadata: {
           name: "",
           description: "",
+          prompt: "",
           category: "General",
           tags: [],
           complexity: 1,
@@ -537,6 +549,7 @@ export default function Dashboard() {
         royaltyPercentage: 100,
         subscriptionPrice: "0",
       });
+      setTagInput("");
       
     } catch (error) {
       console.error("Error minting NFT:", error);
@@ -555,16 +568,35 @@ export default function Dashboard() {
     }
   };
 
-  // Handle tag input for NFT metadata
-  const handleTagInput = (tagString: string) => {
-    const tags = tagString.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+  // Handle tag selection for NFT metadata
+  const handleAddTag = (tag: string) => {
+    if (tag && !nftParams.metadata.tags.includes(tag)) {
+      setNftParams((prev: NFTMintParams) => ({
+        ...prev,
+        metadata: {
+          ...prev.metadata,
+          tags: [...prev.metadata.tags, tag]
+        }
+      }));
+      setTagInput("");
+    }
+  };
+  
+  const handleRemoveTag = (tagToRemove: string) => {
     setNftParams((prev: NFTMintParams) => ({
       ...prev,
       metadata: {
         ...prev.metadata,
-        tags
+        tags: prev.metadata.tags.filter(tag => tag !== tagToRemove)
       }
     }));
+  };
+  
+  const handleCustomTag = () => {
+    const customTag = tagInput.trim();
+    if (customTag && !nftParams.metadata.tags.includes(customTag)) {
+      handleAddTag(customTag);
+    }
   };
 
   // Update NFT metadata
@@ -1019,6 +1051,18 @@ export default function Dashboard() {
                       </div>
                       
                       <div>
+                        <label className="block text-gray-700 font-inter font-medium mb-2">AI Prompt Content *</label>
+                        <textarea
+                          value={nftParams.metadata.prompt}
+                          onChange={(e) => updateNFTMetadata("prompt", e.target.value)}
+                          placeholder="Enter your AI prompt here. You can use Markdown formatting for better presentation..."
+                          rows={8}
+                          className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 font-inter focus:outline-none focus:border-blue-500 resize-none font-mono text-sm"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">💡 Supports Markdown: **bold**, *italic*, # headers, lists, code blocks</p>
+                      </div>
+                      
+                      <div>
                         <label className="block text-gray-700 font-inter font-medium mb-2">Category</label>
                         <select
                           value={nftParams.metadata.category}
@@ -1034,22 +1078,87 @@ export default function Dashboard() {
                       </div>
                       
                       <div>
-                        <label className="block text-gray-700 font-inter font-medium mb-2">Tags (comma-separated)</label>
+                        <label className="block text-gray-700 font-inter font-medium mb-2">Tags</label>
+                        <div className="space-y-3">
+                          {/* Tag Input - Press Enter to Add */}
+                          <div>
+                            <input
+                              type="text"
+                              value={tagInput}
+                              onChange={(e) => setTagInput(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleCustomTag();
+                                }
+                              }}
+                              placeholder="Type a tag and press Enter..."
+                              className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 font-inter focus:outline-none focus:border-blue-500"
+                            />
+                            <p className="text-sm text-gray-500 mt-1">💡 Press Enter to add each tag</p>
+                          </div>
+                          
+                          {/* Selected Tags Display */}
+                          {nftParams.metadata.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-xl border border-blue-200">
+                              {nftParams.metadata.tags.map((tag: string, index: number) => (
+                                <span 
+                                  key={index} 
+                                  className="group inline-flex items-center bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                                >
+                                  {tag}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveTag(tag)}
+                                    className="ml-2 hover:text-red-200 transition-colors text-lg leading-none"
+                                    aria-label={`Remove ${tag} tag`}
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* Quick Add Suggestions */}
+                          <div>
+                            <label className="block text-sm text-gray-600 mb-2">Quick add popular tags:</label>
+                            <div className="flex flex-wrap gap-2">
+                              {availableTags.filter(tag => !nftParams.metadata.tags.includes(tag)).slice(0, 8).map((tag) => (
+                                <button
+                                  key={tag}
+                                  type="button"
+                                  onClick={() => handleAddTag(tag)}
+                                  className="px-3 py-1.5 bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-colors border border-gray-300 hover:border-blue-400"
+                                >
+                                  + {tag}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-gray-700 font-inter font-medium mb-2">Image URL (optional)</label>
                         <input
                           type="text"
-                          onChange={(e) => handleTagInput(e.target.value)}
-                          placeholder="AI, Creative, Writing"
+                          value={nftParams.metadata.image || ""}
+                          onChange={(e) => updateNFTMetadata("image", e.target.value)}
+                          placeholder="https://images.unsplash.com/photo-..."
                           className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 font-inter focus:outline-none focus:border-blue-500"
                         />
-                        {nftParams.metadata.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {nftParams.metadata.tags.map((tag: string, index: number) => (
-                              <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-sm">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                      </div>
+                      
+                      <div>
+                        <label className="block text-gray-700 font-inter font-medium mb-2">External URL (optional)</label>
+                        <input
+                          type="text"
+                          value={nftParams.metadata.external_url || ""}
+                          onChange={(e) => updateNFTMetadata("external_url", e.target.value)}
+                          placeholder="https://agentic-wallet.com/prompts/..."
+                          className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 font-inter focus:outline-none focus:border-blue-500"
+                        />
                       </div>
                       
                       <div>
@@ -1102,13 +1211,18 @@ export default function Dashboard() {
                       
                       <button
                         onClick={handleMintNFT}
-                        disabled={!nftParams.to || !nftParams.metadata.name || !nftParams.metadata.description || isLoading}
+                        disabled={!nftParams.to || !nftParams.metadata.name || !nftParams.metadata.description || !nftParams.metadata.prompt || isLoading}
                         className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 
                                  text-white font-poppins font-bold py-4 rounded-xl transition-all duration-300 
                                  disabled:opacity-50 disabled:cursor-not-allowed mt-4"
                       >
                         {isLoading ? "Processing..." : "Mint NFT"}
                       </button>
+                      {(!nftParams.to || !nftParams.metadata.name || !nftParams.metadata.description || !nftParams.metadata.prompt) && (
+                        <p className="text-sm text-red-600 mt-2 text-center">
+                          * Please fill in all required fields (Recipient, Name, Description, and Prompt)
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>

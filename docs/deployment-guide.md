@@ -39,53 +39,124 @@ heroku info -a agentic-wallet-api
 
 ### Deploy Frontend Only
 ```bash
-# Ensure you're using frontend configuration
-git checkout main
+# Easy way: Use npm script (recommended!)
+npm run deploy:frontend
 
-# Deploy to frontend app
-git remote add frontend https://git.heroku.com/agentic-wallet.git
-git push frontend main
+# Or manually with git subtree
+git subtree push --prefix frontend https://git.heroku.com/agentic-wallet.git main
 
-# Or using Heroku CLI
+# Or using Heroku CLI with subtree
 heroku git:remote -a agentic-wallet
-git push heroku main
+git subtree push --prefix frontend heroku main
 ```
 
 ### Deploy Backend Only
 ```bash
-# Switch to backend configuration
-cp package.backend.json package.json
-cp Procfile.backend Procfile
+# Easy way: Use npm script (recommended!)
+npm run deploy:backend
 
-# Commit backend configuration
-git add package.json Procfile
-git commit -m "Switch to backend deployment config"
+# Or manually with git subtree
+git subtree push --prefix backend https://git.heroku.com/agentic-wallet-api.git main
 
-# Deploy to backend app
-git remote add backend https://git.heroku.com/agentic-wallet-api.git
-git push backend main
-
-# Or using Heroku CLI
+# Or using Heroku CLI with subtree
 heroku git:remote -a agentic-wallet-api
-git push heroku main
+git subtree push --prefix backend heroku main
+```
 
-# Restore frontend configuration
-git checkout HEAD~1 -- package.json Procfile
-git add package.json Procfile
-git commit -m "Restore frontend config"
+**Note**: The backend has its own `package.json`, `Procfile`, and `heroku.yml` in the `/backend` directory. No config file copying needed!
+
+## Monorepo Deployment Strategies
+
+This project uses a **monorepo structure** with separate frontend and backend directories. Here are the recommended deployment approaches:
+
+### Option 1: Git Subtree (Recommended ✅)
+**Pros:**
+- Clean and simple
+- No file copying or manipulation
+- Each app deploys only its own directory
+- Native Git feature, no extra tools needed
+
+**Cons:**
+- Slightly longer command
+- Need to remember the `--prefix` flag
+
+**Usage:**
+```bash
+# Deploy backend subdirectory only
+git subtree push --prefix backend heroku main
+
+# Deploy frontend subdirectory only  
+git subtree push --prefix frontend heroku main
+```
+
+### Option 2: Git Subtree with Aliases (Easier ✅)
+**Pros:**
+- Same as Option 1 but with shorter commands
+- Create aliases once, use forever
+- No external dependencies
+
+**Setup:**
+```bash
+# Add these aliases to your ~/.zshrc or ~/.bashrc
+alias deploy-frontend='git subtree push --prefix frontend heroku main'
+alias deploy-backend='git subtree push --prefix backend heroku main'
+
+# Or create npm scripts in root package.json
+npm run deploy:frontend
+npm run deploy:backend
+```
+
+### Option 3: Heroku CLI with Project Detection
+**Pros:**
+- Uses Heroku's native features
+- Each subdirectory has its own Procfile and heroku.yml
+- Clean and official approach
+
+**Setup:**
+```bash
+# Backend already has Procfile and heroku.yml in /backend directory
+# Just use git subtree to deploy that directory
+heroku git:remote -a agentic-wallet-api
+git subtree push --prefix backend heroku main
+```
+
+### Option 3: Separate Git Repositories (Not Recommended ❌)
+**Why we don't use this:**
+- Duplicates code across repos
+- Harder to maintain consistency
+- More complex CI/CD setup
+- Loses monorepo benefits
+
+### Option 4: File Copying (Deprecated ❌)
+**Why we removed this:**
+- Error-prone (easy to forget to restore files)
+- Pollutes git history with config swaps
+- Confusing for team members
+- Not scalable
+
+**Old approach (don't use):**
+```bash
+# ❌ BAD: Copying files back and forth
+cp package.backend.json package.json
+git add . && git commit -m "Switch config"
+# ... deploy ...
+git checkout HEAD~1 -- package.json  # Easy to forget!
 ```
 
 ## Configuration Files
 
-### Frontend Configuration
+### Frontend Configuration (Root Level)
+- **Location**: `/Procfile` and `/package.json` (root)
 - **Procfile**: `web: cd frontend && npm start`
 - **package.json**: Frontend-only build and start scripts
 - **heroku-postbuild**: `cd frontend && npm install && npm run build`
 
-### Backend Configuration
-- **Procfile.backend**: `web: cd backend && npm run start:prod`
-- **package.backend.json**: Backend-only build and start scripts
-- **heroku-postbuild**: `cd backend && npm install --legacy-peer-deps && npm run build`
+### Backend Configuration (Backend Directory)
+- **Location**: `/backend/Procfile` and `/backend/package.json`
+- **Procfile**: `web: npm run start:prod`
+- **package.json**: Backend-only build and start scripts
+- **heroku-postbuild**: `npm install --legacy-peer-deps && npm run build`
+- **Deployment**: Uses git subtree to deploy only `/backend` directory
 
 ## Environment Variables
 
@@ -274,14 +345,11 @@ heroku rollback v5 -a agentic-wallet-api
 
 ### Essential Commands
 ```bash
-# Deploy frontend
-heroku git:remote -a agentic-wallet && git push heroku main
+# Deploy frontend (easiest way!)
+npm run deploy:frontend
 
-# Deploy backend (with config switch)
-cp package.backend.json package.json && cp Procfile.backend Procfile
-git add . && git commit -m "Backend config"
-heroku git:remote -a agentic-wallet-api && git push heroku main
-git checkout HEAD~1 -- package.json Procfile
+# Deploy backend (easiest way!)
+npm run deploy:backend
 
 # View logs
 heroku logs --tail -a agentic-wallet      # Frontend
@@ -303,14 +371,11 @@ heroku restart -a APP_NAME
 
 ### Essential Commands
 ```bash
-# Deploy frontend
-heroku git:remote -a agentic-wallet && git push heroku main
+# Deploy frontend (easiest way!)
+npm run deploy:frontend
 
-# Deploy backend (with config switch)
-cp package.backend.json package.json && cp Procfile.backend Procfile
-git add . && git commit -m "Backend config"
-heroku git:remote -a agentic-wallet-api && git push heroku main
-git checkout HEAD~1 -- package.json Procfile
+# Deploy backend (easiest way!)
+npm run deploy:backend
 
 # View logs
 heroku logs --tail -a agentic-wallet      # Frontend

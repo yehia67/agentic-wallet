@@ -181,7 +181,7 @@ Ready to help! What would you like to do?`;
         description: 'Execute wallet transactions and check balances',
         category: 'Wallet',
         parameters: ['action', 'parameters'],
-        endpoint: '/agent/wallet',
+        endpoint: '/wallet',
       },
       {
         name: 'NFT Minting',
@@ -193,7 +193,7 @@ Ready to help! What would you like to do?`;
           'royaltyPercentage',
           'subscriptionPrice',
         ],
-        endpoint: '/agent/nft/mint',
+        endpoint: '/nft/mint',
       },
     ];
 

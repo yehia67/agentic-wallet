@@ -179,7 +179,6 @@ export class WalletService implements OnModuleInit {
   async getAddress(): Promise<string> {
     try {
       if (!this.userAddress) {
-        // In a real implementation, this would use the SDK to get the user's address
         this.userAddress = '0x10b6D4Ec3CA3C374aa4B5673863305ebE4c4d9c1'; // Placeholder
       }
       return this.userAddress;

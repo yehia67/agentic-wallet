@@ -8,11 +8,11 @@ set -e  # Exit on error
 echo "🚀 Deploying Frontend to Heroku..."
 echo ""
 
-# Check if heroku remote exists
-if ! git remote | grep -q "^heroku$"; then
-    echo "⚠️  Heroku remote not found. Adding it now..."
-    heroku git:remote -a agentic-wallet
-    echo "✅ Heroku remote added"
+# Check if heroku-frontend remote exists
+if ! git remote | grep -q "^heroku-frontend$"; then
+    echo "⚠️  Heroku frontend remote not found. Adding it now..."
+    git remote add heroku-frontend https://git.heroku.com/agentic-wallet.git
+    echo "✅ Heroku frontend remote added"
     echo ""
 fi
 
@@ -23,7 +23,7 @@ echo "✅ Frontend subtree created: $FRONTEND_COMMIT"
 echo ""
 
 echo "⬆️  Pushing to Heroku..."
-git push heroku $FRONTEND_COMMIT:main --force
+git push heroku-frontend $FRONTEND_COMMIT:main --force
 echo ""
 
 echo "✅ Frontend deployed successfully!"

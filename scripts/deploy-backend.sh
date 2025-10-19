@@ -8,11 +8,11 @@ set -e  # Exit on error
 echo "🚀 Deploying Backend to Heroku..."
 echo ""
 
-# Check if heroku remote exists
-if ! git remote | grep -q "^heroku$"; then
-    echo "⚠️  Heroku remote not found. Adding it now..."
-    heroku git:remote -a agentic-wallet-api
-    echo "✅ Heroku remote added"
+# Check if heroku-backend remote exists
+if ! git remote | grep -q "^heroku-backend$"; then
+    echo "⚠️  Heroku backend remote not found. Adding it now..."
+    git remote add heroku-backend https://git.heroku.com/agentic-wallet-api.git
+    echo "✅ Heroku backend remote added"
     echo ""
 fi
 
@@ -23,7 +23,7 @@ echo "✅ Backend subtree created: $BACKEND_COMMIT"
 echo ""
 
 echo "⬆️  Pushing to Heroku..."
-git push heroku $BACKEND_COMMIT:main --force
+git push heroku-backend $BACKEND_COMMIT:main --force
 echo ""
 
 echo "✅ Backend deployed successfully!"

@@ -40,6 +40,34 @@ export class AgentService {
 
   async processMessage(dto: AgentMessageDto): Promise<AgentResponseDto> {
     try {
+      const message = dto.message.toLowerCase();
+
+      // ULTRA FAST PATH: Balance checks first (most common request)
+      if (message.includes('balance')) {
+        const addressMatch = dto.message.match(/0x[a-fA-F0-9]{40}/);
+        
+        if (addressMatch) {
+          const result = await this.walletTool.execute({
+            action: 'check_balance',
+            parameters: { to: addressMatch[0] },
+          });
+          return {
+            message: `⚡ Balance for ${addressMatch[0]}:\n• ETH: ${(result.data?.ethBalance || 0).toFixed(6)} ETH\n• USDC: ${(result.data?.usdcBalance || 0).toFixed(2)} USDC`,
+            wallet: result,
+            status: 'completed',
+            mode: 'execution',
+          };
+        } else if (message.includes('my')) {
+          const result = await this.walletTool.execute({ action: 'check_balance' });
+          return {
+            message: `⚡ Your wallet balance:\n• ETH: ${(result.data?.ethBalance || 0).toFixed(6)} ETH\n• USDC: ${(result.data?.usdcBalance || 0).toFixed(2)} USDC`,
+            wallet: result,
+            status: 'completed',
+            mode: 'execution',
+          };
+        }
+      }
+
       // Get or create session
       const sessionId = dto.sessionId || 'default';
       const session = this.getOrCreateSession(

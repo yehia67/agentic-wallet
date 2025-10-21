@@ -100,7 +100,7 @@ type ActionTab = "wallet" | "nft" | "agent";
 type AgentMode = "auto" | "planning" | "execution";
 
 // Helper function to poll for job results
-async function pollForResult(apiUrl: string, jobId: string): Promise<any> {
+async function pollForResult(apiUrl: string, jobId: string): Promise<unknown> {
   const maxAttempts = 60; // 2 minutes max (60 * 2 seconds)
   let attempts = 0;
 

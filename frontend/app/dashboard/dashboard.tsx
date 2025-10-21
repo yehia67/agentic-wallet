@@ -96,6 +96,31 @@ type DashboardMode = "chat" | "action" | "discover";
 type ActionTab = "wallet" | "nft" | "agent";
 type AgentMode = "auto" | "planning" | "execution";
 
+// Helper function to poll for job results
+async function pollForResult(apiUrl: string, jobId: string): Promise<unknown> {
+  const maxAttempts = 60; // 2 minutes max (60 * 2 seconds)
+  let attempts = 0;
+
+  while (attempts < maxAttempts) {
+    const response = await fetch(`${apiUrl}/agent/job/${jobId}`);
+    const job = await response.json();
+
+    if (job.status === 'completed') {
+      return job.result;
+    } else if (job.status === 'failed') {
+      throw new Error(job.error || 'Job failed');
+    } else if (job.status === 'not_found') {
+      throw new Error('Job not found or expired');
+    }
+
+    // Wait 2 seconds before next poll
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    attempts++;
+  }
+
+  throw new Error('Job timeout - please try again');
+}
+
 export default function Dashboard() {
   // Chat state
   const [messages, setMessages] = useState<Message[]>([]);
@@ -317,7 +342,7 @@ export default function Dashboard() {
       setMessages((prev: Message[]) => [...prev, processingMessage]);
 
       // Poll for results
-      const data: AgentResponse = await pollForResult(apiUrl, jobId);
+      const data = await pollForResult(apiUrl, jobId) as AgentResponse;
 
       // Remove the processing message
       setMessages((prev: Message[]) => prev.filter(m => m.id !== processingMessage.id));

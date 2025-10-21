@@ -744,7 +744,7 @@ export default function Dashboard() {
                       )}
                       <div className="flex-1">
                         {message.role === "assistant" ? (
-                          <div className="prose prose-sm max-w-none text-gray-900">
+                          <div className="prose prose-sm max-w-none">
                             <ReactMarkdown
                               remarkPlugins={[remarkGfm]}
                               components={{
@@ -753,25 +753,25 @@ export default function Dashboard() {
                                 h3: (props) => <h3 className="text-base font-bold mt-2 mb-1" {...props} />,
                                 p: (props) => <p className="mb-2 leading-relaxed" {...props} />,
                                 strong: (props) => <strong className="font-bold text-gray-900" {...props} />,
-                                em: (props) => <em className="italic text-gray-700" {...props} />,
+                                em: (props) => <em className="italic text-gray-800" {...props} />,
                                 ul: (props) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
                                 ol: (props) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
                                 li: (props) => <li className="ml-2" {...props} />,
-                                code: (props) => <code className="bg-gray-200 px-1 py-0.5 rounded text-sm" {...props} />,
-                                pre: (props) => <pre className="bg-gray-200 p-2 rounded overflow-x-auto mb-2" {...props} />,
+                                code: (props) => <code className="bg-gray-200 px-1 py-0.5 rounded text-sm text-gray-900" {...props} />,
+                                pre: (props) => <pre className="bg-gray-200 p-2 rounded overflow-x-auto mb-2 text-gray-900" {...props} />,
                               }}
                             >
                               {message.content}
                             </ReactMarkdown>
                           </div>
                         ) : (
-                          <p className="text-lg font-inter leading-relaxed whitespace-pre-wrap">
+                          <p className="text-lg font-inter leading-relaxed whitespace-pre-wrap text-white">
                             {message.content}
                           </p>
                         )}
                         <p
                           className={`text-xs mt-2 ${
-                            message.role === "user" ? "text-blue-100" : "text-gray-500"
+                            message.role === "user" ? "text-white/80" : "text-gray-500"
                           }`}
                         >
                           {message.timestamp.toLocaleTimeString()}

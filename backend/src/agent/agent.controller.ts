@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get } from '@nestjs/common';
+import { Body, Controller, Post, Get, Param } from '@nestjs/common';
 import { AgentService } from './agent.service';
 import { AgentMessageDto, AgentResponseDto } from './dto/agent-message.dto';
 import { CapabilitiesResponseDto } from './dto/capabilities.dto';
@@ -12,6 +12,27 @@ export class AgentController {
     @Body() messageDto: AgentMessageDto,
   ): Promise<AgentResponseDto> {
     return this.agentService.processMessage(messageDto);
+  }
+
+  @Post('message/async')
+  async startAsyncMessage(
+    @Body() messageDto: AgentMessageDto,
+  ): Promise<{ jobId: string }> {
+    return this.agentService.startAsyncJob(messageDto);
+  }
+
+  @Get('job/:jobId')
+  async getJobStatus(@Param('jobId') jobId: string): Promise<any> {
+    const job = this.agentService.getJobStatus(jobId);
+    
+    if (!job) {
+      return {
+        status: 'not_found',
+        message: 'Job not found or expired',
+      };
+    }
+
+    return job;
   }
 
   @Get('capabilities')

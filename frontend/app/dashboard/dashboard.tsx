@@ -285,7 +285,9 @@ export default function Dashboard() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-      const response = await fetch(`${apiUrl}/agent/message`, {
+      
+      // Start async job
+      const startResponse = await fetch(`${apiUrl}/agent/message/async`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -297,13 +299,28 @@ export default function Dashboard() {
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMsg = errorData.message || `Server error: ${response.status} ${response.statusText}`;
+      if (!startResponse.ok) {
+        const errorData = await startResponse.json().catch(() => ({}));
+        const errorMsg = errorData.message || `Server error: ${startResponse.status} ${startResponse.statusText}`;
         throw new Error(errorMsg);
       }
 
-      const data: AgentResponse = await response.json();
+      const { jobId } = await startResponse.json();
+
+      // Add a temporary "processing" message
+      const processingMessage: Message = {
+        id: `processing-${Date.now()}`,
+        role: "assistant",
+        content: "⏳ Processing your request... (Job ID: " + jobId.substring(0, 12) + "...)",
+        timestamp: new Date(),
+      };
+      setMessages((prev: Message[]) => [...prev, processingMessage]);
+
+      // Poll for results
+      const data: AgentResponse = await pollForResult(apiUrl, jobId);
+
+      // Remove the processing message
+      setMessages((prev: Message[]) => prev.filter(m => m.id !== processingMessage.id));
 
       // Format the response content based on the structure
       let responseContent = data.message || "I'm sorry, I couldn't process that request.";

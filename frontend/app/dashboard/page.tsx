@@ -842,7 +842,7 @@ export default function Dashboard() {
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ask me anything about crypto strategies, DeFi, airdrops..."
-                  className="flex-1 resize-none rounded-2xl border-2 border-gray-300 focus:border-blue-500 focus:outline-none px-6 py-4 text-lg font-inter"
+                  className="flex-1 resize-none rounded-2xl border-2 border-gray-300 focus:border-blue-500 focus:outline-none px-6 py-4 text-lg font-inter text-gray-900"
                   rows={2}
                   disabled={isLoading}
                 />

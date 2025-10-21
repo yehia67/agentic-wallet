@@ -63,6 +63,12 @@ export class AgentService {
         return welcomeResponse;
       }
 
+      // FAST PATH: Try to handle common requests immediately
+      const fastResponse = await this.tryFastPath(context);
+      if (fastResponse) {
+        return fastResponse;
+      }
+
       // Determine execution mode
       const modeDecision = this.determineExecutionMode(context);
 
@@ -790,5 +796,88 @@ If it requires caution, mention key risks briefly.`;
       this.logger.error(`Quick plan generation failed: ${error.message}`);
       return "I can help you with that. Please provide more details about what you'd like to do.";
     }
+  }
+
+  /**
+   * Fast path for common requests that don't need the full workflow
+   * Returns response immediately for simple queries
+   */
+  private async tryFastPath(
+    context: AgentContext,
+  ): Promise<AgentResponseDto | null> {
+    const message = context.userIntent.toLowerCase();
+
+    try {
+      // Balance checking - most common request
+      if (message.includes('balance')) {
+        const addressMatch = context.userIntent.match(/0x[a-fA-F0-9]{40}/);
+        
+        if (addressMatch) {
+          const address = addressMatch[0];
+          const result = await this.walletTool.execute({
+            action: 'check_balance',
+            parameters: { to: address },
+          });
+
+          const ethBalance = result.data?.ethBalance || 0;
+          const usdcBalance = result.data?.usdcBalance || 0;
+
+          return {
+            message: `⚡ Balance for ${address}:\n• ETH: ${ethBalance.toFixed(6)} ETH\n• USDC: ${usdcBalance.toFixed(2)} USDC`,
+            wallet: result,
+            status: 'completed',
+            mode: 'execution',
+          };
+        } else if (message.includes('my')) {
+          const result = await this.walletTool.execute({
+            action: 'check_balance',
+          });
+
+          const ethBalance = result.data?.ethBalance || 0;
+          const usdcBalance = result.data?.usdcBalance || 0;
+
+          return {
+            message: `⚡ Your wallet balance:\n• ETH: ${ethBalance.toFixed(6)} ETH\n• USDC: ${usdcBalance.toFixed(2)} USDC`,
+            wallet: result,
+            status: 'completed',
+            mode: 'execution',
+          };
+        }
+      }
+
+      // Simple informational queries
+      if (message.includes('what can you do') || message.includes('what are your capabilities')) {
+        return {
+          message: `⚡ I can help you with:\n\n• 💰 Check wallet balances (ETH & USDC)\n• 💸 Transfer tokens\n• 🎨 Mint NFTs\n• 📊 DeFi strategies\n• 🔍 Research protocols\n• ⚖️ Evaluate transaction safety\n\nJust ask me what you need!`,
+          status: 'completed',
+        };
+      }
+
+      // Wallet creation
+      if (message.includes('create wallet') || message.includes('new wallet')) {
+        return {
+          message: `⚡ To create a new wallet:\n\n1. I can generate a secure wallet address\n2. You'll receive a private key (keep it safe!)\n3. The wallet will be ready to use immediately\n\n⚠️ Important: Never share your private key with anyone.\n\nWould you like me to proceed with creating a new wallet?`,
+          status: 'completed',
+          mode: 'execution',
+        };
+      }
+
+      // NFT queries
+      if (message.includes('mint nft') && !message.includes('how') && !message.includes('strategy')) {
+        return {
+          message: `⚡ To mint an NFT, I need:\n\n• Recipient address\n• NFT metadata (name, description, image)\n• Royalty percentage (optional)\n• Subscription price (optional)\n\nPlease provide these details and I'll mint it for you!`,
+          status: 'completed',
+          mode: 'execution',
+        };
+      }
+
+    } catch (error) {
+      this.logger.error(`Fast path failed: ${error.message}`);
+      // Return null to fall through to normal workflow
+      return null;
+    }
+
+    // No fast path match, return null to continue with normal flow
+    return null;
   }
 }

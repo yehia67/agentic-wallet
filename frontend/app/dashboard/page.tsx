@@ -354,7 +354,7 @@ export default function Dashboard() {
       setMessages((prev: Message[]) => [...prev, processingMessage]);
 
       // Poll for results
-      const data: AgentResponse = await pollForResult(apiUrl, jobId);
+      const data = await pollForResult(apiUrl, jobId) as AgentResponse;
 
       // Remove the processing message
       setMessages((prev: Message[]) => prev.filter(m => m.id !== processingMessage.id));

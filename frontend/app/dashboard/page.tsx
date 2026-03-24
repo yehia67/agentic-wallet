@@ -744,21 +744,21 @@ export default function Dashboard() {
                       )}
                       <div className="flex-1">
                         {message.role === "assistant" ? (
-                          <div className="prose prose-sm max-w-none">
+                          <div className="prose prose-sm max-w-none text-black">
                             <ReactMarkdown
                               remarkPlugins={[remarkGfm]}
                               components={{
-                                h1: (props) => <h1 className="text-xl font-bold mt-4 mb-2" {...props} />,
-                                h2: (props) => <h2 className="text-lg font-bold mt-3 mb-2" {...props} />,
-                                h3: (props) => <h3 className="text-base font-bold mt-2 mb-1" {...props} />,
-                                p: (props) => <p className="mb-2 leading-relaxed" {...props} />,
-                                strong: (props) => <strong className="font-bold text-gray-900" {...props} />,
-                                em: (props) => <em className="italic text-gray-800" {...props} />,
-                                ul: (props) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
-                                ol: (props) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
-                                li: (props) => <li className="ml-2" {...props} />,
-                                code: (props) => <code className="bg-gray-200 px-1 py-0.5 rounded text-sm text-gray-900" {...props} />,
-                                pre: (props) => <pre className="bg-gray-200 p-2 rounded overflow-x-auto mb-2 text-gray-900" {...props} />,
+                                h1: (props) => <h1 className="text-xl font-bold mt-4 mb-2 text-black" {...props} />,
+                                h2: (props) => <h2 className="text-lg font-bold mt-3 mb-2 text-black" {...props} />,
+                                h3: (props) => <h3 className="text-base font-bold mt-2 mb-1 text-black" {...props} />,
+                                p: (props) => <p className="mb-2 leading-relaxed text-black" {...props} />,
+                                strong: (props) => <strong className="font-bold text-black" {...props} />,
+                                em: (props) => <em className="italic text-black" {...props} />,
+                                ul: (props) => <ul className="list-disc list-inside mb-2 space-y-1 text-black" {...props} />,
+                                ol: (props) => <ol className="list-decimal list-inside mb-2 space-y-1 text-black" {...props} />,
+                                li: (props) => <li className="ml-2 text-black" {...props} />,
+                                code: (props) => <code className="bg-gray-200 px-1 py-0.5 rounded text-sm text-black" {...props} />,
+                                pre: (props) => <pre className="bg-gray-200 p-2 rounded overflow-x-auto mb-2 text-black" {...props} />,
                               }}
                             >
                               {message.content}
